@@ -7,11 +7,12 @@ public class TupleIteratorTest
 {
     @Test public void trivial()
     {
-        Integer[] arr = {1, 2, 3, 4, 5, 6};
-        List<Integer> asList = Arrays.asList(arr);
-        Iterator<Integer> iter = asList.iterator();
-        Integer[] expected1 = new Integer[] {1, 2, 3};
-        Integer[] expected2 = new Integer[] {2, 3, 4};
+        TaggedToken[] arr = {tt("a/1"), tt("b/2"), tt("c/3"), tt("d/4"),
+            tt("e/5"), tt("d/6")};
+        List<TaggedToken> asList = Arrays.asList(arr);
+        Iterator<TaggedToken> iter = asList.iterator();
+        TaggedToken[] expected1 = new TaggedToken[] {tt("a/1"), tt("b/2"), tt("c/3")};
+        TaggedToken[] expected2 = new TaggedToken[] {tt("b/2"), tt("c/3"), tt("d/4")};
 
         TupleIterator ti = new TupleIterator(iter, 3);
         
@@ -23,9 +24,10 @@ public class TupleIteratorTest
 
     @Test public void upToEnd()
     {
-        Integer[] arr = {1, 2, 3, 4, 5, 6};
-        List<Integer> asList = Arrays.asList(arr);
-        Iterator<Integer> iter = asList.iterator();
+        TaggedToken[] arr = {tt("a/1"), tt("b/2"), tt("c/3"), tt("d/4"),
+            tt("e/5"), tt("d/6")};
+        List<TaggedToken> asList = Arrays.asList(arr);
+        Iterator<TaggedToken> iter = asList.iterator();
         TupleIterator ti = new TupleIterator(iter, 3);
         int expectedLength = 4;
 
@@ -58,5 +60,10 @@ public class TupleIteratorTest
 
     public TupleIteratorTest()
     {
+    }
+
+    private TaggedToken tt(String s)
+    {
+        return new TaggedToken(s);
     }
 }

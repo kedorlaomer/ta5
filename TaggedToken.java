@@ -10,32 +10,14 @@ public final class TaggedToken
 
     public TaggedToken(String s)
     {
-        String[] t = s.split("/");
-        if (t.length != 2)
-        {
-            throw new IllegalArgumentException("String '" + s +
-                    "' is not a valid tag/token pair.");
-        }
+        int where = s.lastIndexOf("/");
+        if (where == -1)
+            throw new IllegalArgumentException("The pair '" + s +
+                    "' is not of the shape token/tag.");
 
-        token = t[0];
-        tag = t[1];
+        token = s.substring(0, where);
+        tag = s.substring(where+1);
 
-        /* 
-         * find a non-alnum-character that is not one of $*` and
-         * skip from there
-         */
-
-        for (int i = 0; i < tag.length(); i++)
-        {
-            char c = tag.charAt(i);
-            if (!(('a' <= c && c <= 'z') ||
-                  ('A' <= c && c <= 'Z') ||
-                  c == '$' || c == '*' || c == '`'))
-                tag = tag.substring(0, i);
-        }
-
-        this.token = token;
-        this.tag = tag;
     }
 
     public String tag()

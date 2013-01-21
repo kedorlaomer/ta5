@@ -8,17 +8,17 @@ import java.util.*;
  * The original iterator should produce at least k elements.
  */
 
-public class TupleIterator<E> implements Iterator<E[]>
+public class TupleIterator implements Iterator
 {
     private int k; // this should be a constant
-    private Iterator<E> iter;
-    private E[] state;
+    private Iterator<TaggedToken> iter;
+    private TaggedToken[] state;
 
-    public TupleIterator(Iterator<E> iter, int k)
+    public TupleIterator(Iterator<TaggedToken> iter, int k)
     {
         this.k = k;
         this.iter = iter;
-        state = (E[]) new Object[k];
+        state = new TaggedToken[k];
 
         for (int i = 1; i < k; i++)
             state[i] = iter.next(); // elements are expected to exist
@@ -34,10 +34,10 @@ public class TupleIterator<E> implements Iterator<E[]>
         return iter.hasNext();
     }
 
-    public E[] next()
+    public TaggedToken[] next()
     {
         System.arraycopy(state, 1, state, 0, k-1);
         state[k-1] = iter.next();
-        return Arrays.copyOf(state, k);
+        return (TaggedToken[]) Arrays.copyOf(state, k);
     }
 }

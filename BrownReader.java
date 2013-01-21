@@ -29,7 +29,7 @@ public class BrownReader implements Iterator<TaggedToken>
     public TaggedToken next()
     {
         String rv = null;
-        try // this is bad: we swallow IOExceptions and die!
+        try
         {
             readNonWhite();
             rv = accu.toString();
@@ -38,7 +38,6 @@ public class BrownReader implements Iterator<TaggedToken>
 
         catch (IOException exc)
         {
-            exc.printStackTrace();
             throw new RuntimeException(exc);
         }
 

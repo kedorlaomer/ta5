@@ -9,8 +9,8 @@ public class TaggedTokenTest
         String expectedTag = "np";
         String expectedToken = "September-October";
         TaggedToken tt = new TaggedToken(input);
-        assertEquals(tt.tag(), expectedTag);
-        assertEquals(tt.token(), expectedToken);
+        assertEquals(expectedTag, tt.tag());
+        assertEquals(expectedToken, tt.token());
     }
 
     @Test public void pairWithNot()
@@ -19,8 +19,8 @@ public class TaggedTokenTest
         String expectedTag = "*";
         String expectedToken = "not";
         TaggedToken tt = new TaggedToken(input);
-        assertEquals(tt.tag(), expectedTag);
-        assertEquals(tt.token(), expectedToken);
+        assertEquals(expectedTag, tt.tag());
+        assertEquals(expectedToken, tt.token());
     }
 
     @Test public void pairWithDollar()
@@ -29,18 +29,18 @@ public class TaggedTokenTest
         String expectedTag = "np$";
         String expectedToken = "Atlanta's";
         TaggedToken tt = new TaggedToken(input);
-        assertEquals(tt.tag(), expectedTag);
-        assertEquals(tt.token(), expectedToken);
+        assertEquals(expectedTag, tt.tag());
+        assertEquals(expectedToken, tt.token());
     }
 
-    @Test public void pairWithPlus()
+    @Test public void pairWithoutPlus() // was pairWithPlus, but the corpus has been corrected
     {
-        String input = "They're/ppss+ber";
+        String input = "They're/ppss";
         String expectedTag = "ppss";
         String expectedToken = "They're";
         TaggedToken tt = new TaggedToken(input);
-        assertEquals(tt.tag(), expectedTag);
-        assertEquals(tt.token(), expectedToken);
+        assertEquals(expectedTag, tt.tag());
+        assertEquals(expectedToken, tt.token());
     }
 
     @Test public void quotationMakr()
@@ -49,14 +49,19 @@ public class TaggedTokenTest
         String expectedTag = "``";
         String expectedToken = "``";
         TaggedToken tt = new TaggedToken(input);
-        assertEquals(tt.tag(), expectedTag);
-        assertEquals(tt.token(), expectedToken);
+        assertEquals(expectedTag, tt.tag());
+        assertEquals(expectedToken, tt.token());
     }
 
-    @Test(expected=IllegalArgumentException.class) public void notAPair()
+    @Test public void notAPair()
     {
-        new TaggedToken("not/a/pair");
-    }
+        String input = "not/a/pair";
+        String expectedTag = "pair";
+        String expectedToken = "not/a";
+        TaggedToken tt = new TaggedToken(input);
+        assertEquals(expectedTag, tt.tag());
+        assertEquals(expectedToken, tt.token());
+     }
 
     public TaggedTokenTest()
     {
