@@ -14,6 +14,19 @@ public class SentenceReaderTest
         assertEquals(expected, iter.next());
     }
 
+    @Test public void lastSentence() throws IOException
+    {
+        TaggedToken[] expected = new TaggedToken[] { tt("in/in"),  tt("turn/nn"),
+            tt("the/at"), tt("other/ap")};
+        TaggedToken[] result = null;
+        Iterator<TaggedToken[]> iter = new SentenceReader(new FileReader(new File("brown_learn/cf11")), 4);
+
+        while (iter.hasNext())
+            result = iter.next();
+
+        assertEquals(expected, result);
+     }
+
     private TaggedToken tt(String s)
     {
         return new TaggedToken(s);

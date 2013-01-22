@@ -21,13 +21,21 @@ public class HMMLearnerTest
         assertEquals(expectedCount, learner.get(new TaggedToken[] {tt}));
     }
 
-    @Test public void countThereIs() throws IOException
+    @Test public void initialCountThereIs() throws IOException
     {
         HMMLearner learner = new HMMLearner(new File("brown_learn"), 2);
         TaggedToken tt[] = new TaggedToken[] { new TaggedToken("there/ex"),
             new TaggedToken("is/bez")};
-        int expectedCount = 532;
-        assertEquals(expectedCount, learner.get(tt));
+        int expectedCount = 190;
+        assertEquals(expectedCount, learner.getInitial(tt));
+    }
+
+    @Test public void initialCountThe() throws IOException
+    {
+        HMMLearner learner = new HMMLearner(new File("brown_learn/ca01"), 1);
+        TaggedToken tt = new TaggedToken("the/at");
+        int expectedCount = 27;
+        assertEquals(expectedCount, learner.getInitial(new TaggedToken[] {tt}));
     }
 
     public HMMLearnerTest()
