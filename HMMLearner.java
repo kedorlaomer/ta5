@@ -10,6 +10,8 @@ public class HMMLearner
     /* all k-tuples */
     private HashMap<List<TaggedToken>, Integer> model = new HashMap<List<TaggedToken>, Integer>();
 
+    private HashMap<List<String>, Integer> formatedModel = new HashMap<List<String>, Integer>();
+
     /* k-tuples at sentence openings */
     private HashMap<List<TaggedToken>, Integer> initial = new HashMap<List<TaggedToken>, Integer>();
 
@@ -78,8 +80,8 @@ public class HMMLearner
         {
             reader = new FileReader(f);
             readToModelWithIterator(f, model, new TupleIterator(new BrownReader(reader), k));
+            formatModel();
         }
-
         finally
         {
             if (reader != null)
@@ -100,6 +102,50 @@ public class HMMLearner
         {
             if (reader != null)
                 reader.close();
+        }
+    }
+
+    /* transforms the keys of model (token_0/tag_0, token_1/tag_1 ... token_k-1/tag_k-1)
+    * into new keys of the form (tag_0, tag_1, ... , tag_k-2, token_k-1, tag_k-1)
+    */
+    private void formatModel()
+    {
+        System.out.println("########################");
+        int aux = 0;
+        for(List<TaggedToken> key : model.keySet())
+        {
+
+            ArrayList<String> newKey = new ArrayList<String>();
+            for(int i = 0; i < key.size(); i++)
+            {
+                if(i == key.size()-1)
+                {
+                    newKey.add(key.get(i).token());
+                    newKey.add(key.get(i).tag());
+                }
+                else
+                {
+                    newKey.add(key.get(i).tag());                        
+                }
+            }
+            if(aux < 10){
+                System.out.println("----------------------");
+                
+                System.out.println("aux = "+new Integer(aux).toString());
+                System.out.println("oldKey = "+key.toString());
+                System.out.println("newKey = "+newKey.toString());
+            }
+            Integer value = new Integer(0);
+            if(formatedModel.containsKey(newKey))
+            {
+                value += formatedModel.get(newKey);
+            }
+            formatedModel.put(newKey,value + new Integer(this.get((TaggedToken[])key.toArray())));
+        aux++;
+        }
+        for(List<TaggedToken> key : model.keySet())
+        {
+            System.out.println("");
         }
     }
 }
