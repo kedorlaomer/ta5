@@ -56,6 +56,11 @@ public class HMMLearner
         Integer rv = formatedModel.get(Arrays.asList(key));
         return rv == null? 0 : rv;
     }
+    public int getFormatedModel(ArrayList<String> key)
+    {
+        Integer rv = formatedModel.get(key);
+        return rv == null? 0 : rv;
+    }
 
     /* how often does tt occur in the beginning of sentences in our corpus? */
     public int getInitial(TaggedToken[] tt)
@@ -133,41 +138,29 @@ public class HMMLearner
                     newKey.add(key.get(i).tag());                        
                 }
             }
-            if(aux < 10){
-                System.out.println("----------------------");
-                
-                System.out.println("aux = "+new Integer(aux).toString());
-                System.out.println("oldKey = "+key.toString());
-                System.out.println("newKey = "+newKey.toString());
-            }
-
             Integer value = new Integer(0);
             if(formatedModel.containsKey(newKey))
             {
-                value += new Integer(this.getFormatedModel((String[])newKey.toArray()));
+                value += new Integer(this.getFormatedModel(newKey));
             }
             formatedModel.put(newKey,value + new Integer(this.getModel((TaggedToken[])key.toArray())));
             aux++;
         }
-
-        // for(List<TaggedToken> key : model.keySet())
-        // {
-        //     System.out.println("key: " + key.toString() +" value: " + new Integer(this.getModel((TaggedToken[])key.toArray())).toString());
-        // }
-        
-        // for(List<String> key : formatedModel.keySet())
-        // {
-        //     System.out.println("key: " + key.toString() +" value: " + new Integer(this.getFormatedModel((String[])key.toArray())).toString());
-        // }
-    
     }
 
     public double probability(String[] history, String token, String tag)
     {
         //coger todas las apariciones de history+token+tag en formatedModel y dividirlas entre todas las apariciones de history+token+??
+        ArrayList <String> key = new ArrayList <String>();
+        key.addAll(history);
+        key.add(token);
+        key.add(tag);
+
+        return 0.0;
     }
     public double initialProbability(String token, String tag)
     {
         //idem
+        return 0.0;
     }
 }
