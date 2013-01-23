@@ -27,8 +27,6 @@ public class CrossValidation
             List<File> files = Arrays.asList(f.listFiles());
             Collections.shuffle(files);
             for(int i = 0; i < files.size(); i++){
-                System.out.println(" index for splitCorpus is "+new Integer(i%10));
-                System.out.println(" splitCorpus size "+new Integer(splitCorpus.size()));
                 ArrayList<File> aux = splitCorpus.get(i%10);
                 aux.add(files.get(i));
                 splitCorpus.set(i%10,aux);                                
@@ -41,16 +39,14 @@ public class CrossValidation
         try{
             BufferedWriter out = new BufferedWriter(new FileWriter(output));
             for(File f : files)
-            {
                 try 
                 {
                     BufferedReader in =  new BufferedReader(new FileReader(f));
                     try
                     {
                         String line = null;
-                        while (( line = in.readLine()) != null){
+                        while (( line = in.readLine()) != null)
                             out.write(line+"\n");
-                        }
                     }
                     finally
                     {
@@ -61,7 +57,6 @@ public class CrossValidation
                 {
                     ex.printStackTrace();
                 }                   
-            }
             out.close(); 
         }
         catch (IOException ex)
