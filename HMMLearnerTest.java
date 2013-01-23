@@ -10,7 +10,7 @@ public class HMMLearnerTest
         HMMLearner learner = new HMMLearner(new File("brown_learn"), 1);
         TaggedToken tt = new TaggedToken("component/nn");
         int expectedCount = 23; // yes, we counted this externally (count.pl)
-        assertEquals(expectedCount, learner.get(new TaggedToken[] {tt}));
+        assertEquals(expectedCount, learner.getModel(new TaggedToken[] {tt}));
     }
 
     @Test public void countThe() throws IOException
@@ -18,7 +18,7 @@ public class HMMLearnerTest
         HMMLearner learner = new HMMLearner(new File("brown_learn/ca01"), 1);
         TaggedToken tt = new TaggedToken("the/at");
         int expectedCount = 155;
-        assertEquals(expectedCount, learner.get(new TaggedToken[] {tt}));
+        assertEquals(expectedCount, learner.getModel(new TaggedToken[] {tt}));
     }
 
     @Test public void initialCountThereIs() throws IOException
