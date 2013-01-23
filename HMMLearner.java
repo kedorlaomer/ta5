@@ -46,9 +46,14 @@ public class HMMLearner
     }
 
     /* how often does tt occur in our corpus? */
-    public int get(TaggedToken[] tt)
+    public int getModel(TaggedToken[] tt)
     {
         Integer rv = model.get(Arrays.asList(tt));
+        return rv == null? 0 : rv;
+    }
+    public int getFormatedModel(String[] key)
+    {
+        Integer rv = formatedModel.get(Arrays.asList(key));
         return rv == null? 0 : rv;
     }
 
@@ -135,17 +140,34 @@ public class HMMLearner
                 System.out.println("oldKey = "+key.toString());
                 System.out.println("newKey = "+newKey.toString());
             }
+
             Integer value = new Integer(0);
             if(formatedModel.containsKey(newKey))
             {
-                value += formatedModel.get(newKey);
+                value += new Integer(this.getFormatedModel((String[])newKey.toArray()));
             }
-            formatedModel.put(newKey,value + new Integer(this.get((TaggedToken[])key.toArray())));
-        aux++;
+            formatedModel.put(newKey,value + new Integer(this.getModel((TaggedToken[])key.toArray())));
+            aux++;
         }
-        for(List<TaggedToken> key : model.keySet())
-        {
-            System.out.println("");
-        }
+
+        // for(List<TaggedToken> key : model.keySet())
+        // {
+        //     System.out.println("key: " + key.toString() +" value: " + new Integer(this.getModel((TaggedToken[])key.toArray())).toString());
+        // }
+        
+        // for(List<String> key : formatedModel.keySet())
+        // {
+        //     System.out.println("key: " + key.toString() +" value: " + new Integer(this.getFormatedModel((String[])key.toArray())).toString());
+        // }
+    
+    }
+
+    public double probability(String[] history, String token, String tag)
+    {
+        //coger todas las apariciones de history+token+tag en formatedModel y dividirlas entre todas las apariciones de history+token+??
+    }
+    public double initialProbability(String token, String tag)
+    {
+        //idem
     }
 }
