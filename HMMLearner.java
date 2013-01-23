@@ -16,7 +16,7 @@ public class HMMLearner
     private HashMap<List<TaggedToken>, Integer> initial = new HashMap<List<TaggedToken>, Integer>();
 
     //not necessary
-    private HashMap<List<TaggedToken>, Integer> formatedInitial = new HashMap<List<String>, Integer>();
+    private HashMap<List<String>, Integer> formatedInitial = new HashMap<List<String>, Integer>();
 
     private int k;
 
@@ -165,8 +165,6 @@ public class HMMLearner
     //Wie kann man dass fuer model und initial allgemein machen??
     //private void formatModel(HashMap<List<TaggedToken>, Integer> mod, HashMap<List<String>, Integer> fMod)
 
-
-
     public double probability(String[] history, String token, String tag)
     {
         ArrayList <String> searchKey = new ArrayList <String>();
@@ -177,9 +175,9 @@ public class HMMLearner
         LOOP:
         for(List<String> key : formatedModel.keySet()){
             for(int i = 0; i < k-1; i++)
-                if(history[i]!=key.get(i))
+                if(!history[i].equals(key.get(i)))
                     continue LOOP; 
-            if(key.get(k-1) != token)
+            if(!key.get(k-1).equals(token))
                 continue LOOP;
             sum += this.getFormatedModel((ArrayList<String>)key);
         }
@@ -193,12 +191,11 @@ public class HMMLearner
         searchKey.add(tag);
         Integer sum = new Integer(0);
         LOOP:
-        for(List<String> key : initial.keySet()){
-            if(key.get(0) != token)
+        for(List<String> key : formatedInitial.keySet()){
+            if(!key.get(0).equals(token))
                 continue LOOP;
             sum += this.getFormatedInitial((ArrayList<String>)key);
         }
         return sum == 0? Double.NaN : new Integer(this.getFormatedInitial(searchKey)).doubleValue()/sum.doubleValue();
-    }
     }
 }
