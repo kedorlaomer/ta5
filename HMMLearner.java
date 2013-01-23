@@ -15,6 +15,9 @@ public class HMMLearner
     /* k-tuples at sentence openings */
     private HashMap<List<TaggedToken>, Integer> initial = new HashMap<List<TaggedToken>, Integer>();
 
+    //not necessary
+    private HashMap<List<TaggedToken>, Integer> formatedInitial = new HashMap<List<String>, Integer>();
+
     private int k;
 
     /*
@@ -51,6 +54,11 @@ public class HMMLearner
         Integer rv = model.get(Arrays.asList(tt));
         return rv == null? 0 : rv;
     }
+    public int getModel(ArrayList<TaggedToken> tt)
+    {
+        Integer rv = model.get(tt);
+        return rv == null? 0 : rv;
+    }
     public int getFormatedModel(String[] key)
     {
         Integer rv = formatedModel.get(Arrays.asList(key));
@@ -66,6 +74,22 @@ public class HMMLearner
     public int getInitial(TaggedToken[] tt)
     {
         Integer rv = initial.get(Arrays.asList(tt));
+        return rv == null? 0 : rv;
+    }
+    public int getInitial(ArrayList<String> key)
+    {
+        Integer rv = initial.get(key);
+        return rv == null? 0 : rv;
+    }
+
+    public int getFormatedInitial(TaggedToken[] tt)
+    {
+        Integer rv = formatedInitial.get(Arrays.asList(tt));
+        return rv == null? 0 : rv;
+    }
+    public int getFormatedInitial(ArrayList<String> key)
+    {
+        Integer rv = formatedInitial.get(key);
         return rv == null? 0 : rv;
     }
 
@@ -120,47 +144,61 @@ public class HMMLearner
     */
     private void formatModel()
     {
-        System.out.println("########################");
-        int aux = 0;
         for(List<TaggedToken> key : model.keySet())
         {
-
             ArrayList<String> newKey = new ArrayList<String>();
             for(int i = 0; i < key.size(); i++)
-            {
                 if(i == key.size()-1)
                 {
                     newKey.add(key.get(i).token());
                     newKey.add(key.get(i).tag());
                 }
                 else
-                {
                     newKey.add(key.get(i).tag());                        
-                }
-            }
             Integer value = new Integer(0);
             if(formatedModel.containsKey(newKey))
-            {
                 value += new Integer(this.getFormatedModel(newKey));
-            }
             formatedModel.put(newKey,value + new Integer(this.getModel((TaggedToken[])key.toArray())));
-            aux++;
         }
     }
 
+    //Wie kann man dass fuer model und initial allgemein machen??
+    //private void formatModel(HashMap<List<TaggedToken>, Integer> mod, HashMap<List<String>, Integer> fMod)
+
+
+
     public double probability(String[] history, String token, String tag)
     {
-        //coger todas las apariciones de history+token+tag en formatedModel y dividirlas entre todas las apariciones de history+token+??
-        ArrayList <String> key = new ArrayList <String>();
-        key.addAll(history);
-        key.add(token);
-        key.add(tag);
-
-        return 0.0;
+        ArrayList <String> searchKey = new ArrayList <String>();
+        searchKey.addAll(Arrays.asList(history));
+        searchKey.add(token);
+        searchKey.add(tag);
+        Integer sum = new Integer(0);
+        LOOP:
+        for(List<String> key : formatedModel.keySet()){
+            for(int i = 0; i < k-1; i++)
+                if(history[i]!=key.get(i))
+                    continue LOOP; 
+            if(key.get(k-1) != token)
+                continue LOOP;
+            sum += this.getFormatedModel((ArrayList<String>)key);
+        }
+        return sum == 0? Double.NaN : new Integer(this.getFormatedModel(searchKey)).doubleValue()/sum.doubleValue();
     }
+
     public double initialProbability(String token, String tag)
     {
-        //idem
-        return 0.0;
+        ArrayList <String> searchKey = new ArrayList <String>();
+        searchKey.add(token);
+        searchKey.add(tag);
+        Integer sum = new Integer(0);
+        LOOP:
+        for(List<String> key : initial.keySet()){
+            if(key.get(0) != token)
+                continue LOOP;
+            sum += this.getFormatedInitial((ArrayList<String>)key);
+        }
+        return sum == 0? Double.NaN : new Integer(this.getFormatedInitial(searchKey)).doubleValue()/sum.doubleValue();
+    }
     }
 }
