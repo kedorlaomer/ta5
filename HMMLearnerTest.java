@@ -38,6 +38,37 @@ public class HMMLearnerTest
         assertEquals(expectedCount, learner.getInitial(new TaggedToken[] {tt}));
     }
 
+    //<<token1, tag1>, <token1, tag1>, …, <token(k-1),tag(k-1)>> : count
+    //<tag1, tag2, …, tagk-2, tokenk-1, tagk-1> : count
+    @Test public void checkFormattedModel() throws IOException
+    {
+        int k = 3;
+        HMMLearner learner = new HMMLearner(new File("brown_learn/ca01"), k);
+
+        String text = "The/at Fulton/np County/nn Grand/jj";
+        ArrayList<TaggedToken> taggedTokens = new ArrayList<TaggedToken>();
+        ArrayList<String> tags = new ArrayList<String>();
+
+        int i = 0;
+        TaggedToken tt;
+
+        for (String stt : text.split(" ")) {
+            tt = new TaggedToken(stt);
+            taggedTokens.add(tt);
+
+            if (i == k-2)
+                tags.add(tt.token());
+            tags.add(tt.tag());
+            if (i == k-1)
+                break;
+            i++;
+        }
+
+        int tagsCount = learner.getModel(taggedTokens);
+        int elementCount = learner.getFormatedModel(tags);
+        assertEquals(tagsCount, elementCount);
+    }
+
     public HMMLearnerTest()
     {
     }
