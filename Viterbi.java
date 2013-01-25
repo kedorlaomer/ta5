@@ -32,7 +32,9 @@ public class Viterbi
 
     public TaggedToken[] tagSentence(TaggedToken[] sentence)
     {
-        
+        //ein riesen array erzeugen
+        //alle tags durchgehen fuer probability
+        //siehe Folien
     }
 
     /*
