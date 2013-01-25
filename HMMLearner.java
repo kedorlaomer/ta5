@@ -17,6 +17,8 @@ public class HMMLearner
 
     //not necessary
     private HashMap<List<String>, Integer> formatedInitial = new HashMap<List<String>, Integer>();
+    
+    private HashMap<List<String>, Double> probabilityModel = new HashMap<List<String>, Double>();
 
     private int k;
 
@@ -161,6 +163,24 @@ public class HMMLearner
             formatedModel.put(newKey,value + new Integer(this.getModel((TaggedToken[])key.toArray())));
         }
     }
+
+
+    public void initLaplaceModel()
+    {
+        ArrayList<String> prevTags;
+        String token, tag;
+        for (List<String> key : formatedModel.keySet())
+        {
+            token = key.get(key.size() - 1);
+            tag = key.get(key.size() - 2);
+
+            prevTags = new ArrayList<String>(key);
+            prevTags.removeRange(key.size() - 2, key.size());
+
+            probabilityModel.put(key, probability(prevTags, token, tag));
+        }
+    }
+
 
     /* Gives the probability that a given token has a given tag with respect to the given history of tags.
     */
