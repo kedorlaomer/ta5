@@ -135,7 +135,7 @@ public class Viterbi
      * returns the n last elements of arr
      */
 
-    private String[] lastElements(String[] arr, int n)
+    protected String[] lastElements(String[] arr, int n)
     {
         n = Math.min(n, arr.length);
         String[] rv = new String[n];
