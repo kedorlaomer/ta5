@@ -18,7 +18,8 @@ public class HMMLearner
     //not necessary
     private HashMap<List<String>, Integer> formatedInitial = new HashMap<List<String>, Integer>();
     
-    private HashMap<List<String>, Double> probabilityModel = new HashMap<List<String>, Double>();
+    public HashMap<List<String>, Double> probabilityModel = new HashMap<List<String>, Double>();
+    public HashMap<List<String>, Double> probabilityInitial = new HashMap<List<String>, Double>();
 
     private int k;
 
@@ -32,6 +33,8 @@ public class HMMLearner
         this.k = k;
         readRecursively(directory);
         formatModel();
+        getProbabilityFrom(probabilityModel, formatedModel);
+        getProbabilityFrom(probabilityInitial, formatedInitial);
     }
 
     /*
@@ -165,21 +168,18 @@ public class HMMLearner
     }
 
 
-    public void initProbabilityModel()
+    public void getProbabilityFrom(HashMap<List<String>, Double> model,
+        HashMap<List<String>, Integer> from)
     {
-        // ArrayList<String> prevTags;
         String [] prevTags;
         String token, tag;
-        for (List<String> key : formatedModel.keySet())
+        for (List<String> key : from.keySet())
         {
+            prevTags = key.toArray(new String[key.size() - 2]);
             token = key.get(key.size() - 2);
             tag = key.get(key.size() - 1);
 
-            // prevTags = new ArrayList<String>(key);
-            // prevTags.remove(key.size() - 1);
-            // prevTags.remove(key.size() - 1);
-            prevTags = key.toArray(new String[key.size() - 2]);
-            probabilityModel.put(key, probability(prevTags, token, tag));
+            model.put(key, probability(prevTags, token, tag));
         }
     }
 
@@ -252,18 +252,5 @@ LOOP:
 
         System.out.println(good + "÷" + all);
         return ((double) good)/all;
-    }
-
-    public static void main(String[] args)
-    {
-        if (args.length > 1) {
-            String directory = args[1];
-            if (args[0] == "learn") {
-                // HMMLearner learner = new HMMLearner(new File(directory), 1);
-            }
-            else if (args[0] == "annotate") {
-                ;
-            }
-        }
     }
 }
