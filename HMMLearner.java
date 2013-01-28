@@ -29,6 +29,7 @@ public class HMMLearner
     {
         this.k = k;
         readRecursively(directory);
+        formatModel();
     }
 
     /*
@@ -114,7 +115,6 @@ public class HMMLearner
         {
             reader = new FileReader(f);
             readToModelWithIterator(f, model, new TupleIterator(new BrownReader(reader), k));
-            formatModel();
         }
         finally
         {
