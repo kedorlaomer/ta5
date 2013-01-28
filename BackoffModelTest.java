@@ -9,7 +9,7 @@ public class BackoffModelTest
 
     @Before public void setUp() throws IOException
     {
-        odel = new BackoffModel(new File("brown_learn"), 0.2);
+        model = new BackoffModel(new File("brown_learn"), 0.2);
     }
 
     @Test public void testNP()

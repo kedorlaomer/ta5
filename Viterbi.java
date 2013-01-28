@@ -20,7 +20,7 @@ public class Viterbi
         this.k = k;
         this.a = a;
 
-        learner = HMMLearner[k];
+        learners = new HMMLearner[k];
 
         for (int i = 0; i < k; i++)
             learners[i] = new HMMLearner(directory, i+1);
@@ -137,5 +137,22 @@ public class Viterbi
                 }
             }
         return rv/denom;
+    }
+
+    /*
+     * returns the n last elements of arr
+     */
+
+    private String[] lastElements(String[] arr, int n)
+    {
+        n = Math.min(n, arr.length);
+        String[] rv = new String[n];
+        System.arraycopy(arr, arr.length-n, rv, 0, n);
+        return rv;
+    }
+
+    private transitionProbability(String tags[], String tag)
+    {
+        return learners[tags.length].transitionProbability(tags, tag);
     }
 }
