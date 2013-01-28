@@ -175,7 +175,8 @@ public class HMMLearner
             tag = key.get(key.size() - 1);
 
             prevTags = new ArrayList<String>(key);
-            prevTags.removeRange(key.size() - 2, key.size());
+            prevTags.remove(key.size() - 1);
+            prevTags.remove(key.size() - 1);
 
             probabilityModel.put(key, probability(prevTags, token, tag));
         }
@@ -250,5 +251,17 @@ LOOP:
 
         System.out.println(good + "÷" + all);
         return ((double) good)/all;
+    }
+
+    public static void main(String[] args)
+    {
+        if (args.size() > 1) {
+            if (args[0] == "learn") {
+                ;
+            }
+            else if (args[0] == "annotate") {
+                ;
+            }
+        }
     }
 }
