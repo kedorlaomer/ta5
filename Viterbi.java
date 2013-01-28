@@ -6,8 +6,14 @@ public class Viterbi
     private int k;
     private HMMLearner[] learners;
     private double[] a; 
-    private String[] allTags;
     private double[][] probM = new double[150][300]; //150 rows and 300 columns
+
+    private String[] allTags = {".","(",")","*","--",",",":","ABL","ABN","ABX","AP","AT","BE","BED","BEDZ",
+        "BEG","BEM","BEN","BER","BEZ","CC","CD","CS","DO","DOD","DOZ","DT","DTI","DTS","DTX",
+        "EX","FW","HV","HVD","HVG","HVN","IN","JJ","JJR","JJS","JJT","MD","NC","NN","NN$","NNS","NNS$","NP",
+        "NP$","NPS","NPS$","NR","OD","PN","PN$","PP$","PP$$","PPL","PPLS","PPO","PPS","PPSS","PRP",
+        "PRP$","QL","QLP","RB","RBR","RBT","RN","RP","TO","UH","VB","VBD","VBG","VBN","VBP","VBZ","WDT","WP$","WPO","WPS","WQL","WRB"};
+    
 
     /*
      * reads an up to order k HMM model from directory's corpus
