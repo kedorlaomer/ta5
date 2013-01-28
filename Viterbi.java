@@ -58,9 +58,8 @@ public class Viterbi
             else
             {
                 //compute and store log(e_t(S[i+1])) + prevColMax 
+                String[] kHist = lastElements(history, k-1);
                 for(int row = 0; row < allTags.length; row++){
-
-                    String[] kHist = lastElements(history, k-1);
 
                     //compute max(v_s(i)+log(a_s(t)))
                     double prevColMax = 0.0;
@@ -71,7 +70,7 @@ public class Viterbi
                     }
 
                     // store the probability in the matrix
-                    probM[row + 1][i+1] = Math.log(probability(history,tt.token(),allTags[row])) + prevColMax;
+                    probM[row + 1][i+1] = Math.log(probability(kHist,tt.token(),allTags[row])) + prevColMax;
                     index = probM[row + 1][i+1] > probM[index+1][i+1] ? row : index;
                 }
             }
