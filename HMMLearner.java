@@ -167,17 +167,18 @@ public class HMMLearner
 
     public void initProbabilityModel()
     {
-        ArrayList<String> prevTags;
+        // ArrayList<String> prevTags;
+        String [] prevTags;
         String token, tag;
         for (List<String> key : formatedModel.keySet())
         {
             token = key.get(key.size() - 2);
             tag = key.get(key.size() - 1);
 
-            prevTags = new ArrayList<String>(key);
-            prevTags.remove(key.size() - 1);
-            prevTags.remove(key.size() - 1);
-
+            // prevTags = new ArrayList<String>(key);
+            // prevTags.remove(key.size() - 1);
+            // prevTags.remove(key.size() - 1);
+            prevTags = key.toArray(new String[key.size() - 2]);
             probabilityModel.put(key, probability(prevTags, token, tag));
         }
     }
@@ -255,9 +256,10 @@ LOOP:
 
     public static void main(String[] args)
     {
-        if (args.size() > 1) {
+        if (args.length > 1) {
+            String directory = args[1];
             if (args[0] == "learn") {
-                ;
+                // HMMLearner learner = new HMMLearner(new File(directory), 1);
             }
             else if (args[0] == "annotate") {
                 ;
