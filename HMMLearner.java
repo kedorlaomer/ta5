@@ -32,6 +32,7 @@ public class HMMLearner
         this.k = k;
         readRecursively(directory);
         formatModel();
+        formatInitial();
     }
 
     /*
@@ -79,7 +80,7 @@ public class HMMLearner
         Integer rv = initial.get(Arrays.asList(tt));
         return rv == null? 0 : rv;
     }
-    public int getInitial(ArrayList<String> key)
+    public int getInitial(ArrayList<TaggedToken> key)
     {
         Integer rv = initial.get(key);
         return rv == null? 0 : rv;
@@ -164,6 +165,26 @@ public class HMMLearner
         }
     }
 
+    private void formatInitial()
+    {
+        for(List<TaggedToken> key : initial.keySet())
+        {
+            ArrayList<String> newKey = new ArrayList<String>();
+            for(int i = 0; i < key.size(); i++)
+                if(i == key.size()-1)
+                {
+                    newKey.add(key.get(i).token());
+                    newKey.add(key.get(i).tag());
+                }
+                else
+                    newKey.add(key.get(i).tag());
+
+            Integer value = new Integer(this.getInitial((TaggedToken[])key.toArray()));
+            if(formatedInitial.containsKey(newKey))
+                value += new Integer(this.getFormatedInitial(newKey));
+            formatedInitial.put(newKey,value);
+        }
+    }
 
     public void initProbabilityModel()
     {

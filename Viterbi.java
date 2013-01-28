@@ -6,7 +6,6 @@ public class Viterbi
     private int k;
     private HMMLearner[] learners;
     private double[] a; 
-    private double???? transM; 
     private String[] allTags;
     private double[][] probM = new double[150][300]; //150 rows and 300 columns
 
@@ -45,7 +44,7 @@ public class Viterbi
     public TaggedToken[] tagSentence(TaggedToken[] sentence)
     {
         clearMatrix();
-        String[] history = new  String[]();
+        String[] history = new  String[sentence.length+1];
         for(int i = 0; i < sentence.length; i++)
         {
             int index = 0;
@@ -67,8 +66,8 @@ public class Viterbi
                     double prevColMax = 0.0;
                     String [] prevHist = kHist.clone();
                     for(int prevRow = 0; prevRow < allTags.length; prevRow++){
-                        prevHist[prevHist-1] = allTags[prevRow];
-                        prevColMax = Math.max(prevColMax , probMax[prevRow+1][i] + Math.log(transitionProbability(prevHist,allTags[row])));
+                        prevHist[prevHist.length-1] = allTags[prevRow];
+                        prevColMax = Math.max(prevColMax , probM[prevRow+1][i] + Math.log(transitionProbability(prevHist,allTags[row])));
                     }
 
                     // store the probability in the matrix
@@ -77,12 +76,12 @@ public class Viterbi
                 }
             }
             //update history
-            history[i] = allTags(index);
+            history[i] = allTags[index];
         }
         // Now we have the matrix initialized
         // We go backwards getting the best tags
-        TaggedToken[] r = TaggedToken[]();
-        for(int i = 0; i < history.length; i++)
+        TaggedToken [] r = new TaggedToken [sentence.length];
+        for(int i = 0; i < sentence.length; i++)
             r[i] = new TaggedToken(sentence[i].token()+"/"+history[i]);
 
         return r;
@@ -143,7 +142,7 @@ public class Viterbi
         return rv;
     }
 
-    private transitionProbability(String tags[], String tag)
+    private double transitionProbability(String tags[], String tag)
     {
         return learners[tags.length].transitionProbability(tags, tag);
     }
