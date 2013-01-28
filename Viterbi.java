@@ -53,7 +53,7 @@ public class Viterbi
             
             if(i == 0)
                 for(int row = 0; row < allTags.length; row++){
-                    probM[row + 1][i+1] = log(initialProbability(tt.token(),allTags[row]));
+                    probM[row + 1][i+1] = Math.log(initialProbability(tt.token(),allTags[row]));
                     index = probM[row + 1][i+1] > probM[index+1][i+1] ? row : index;
                 }
             else
@@ -61,26 +61,18 @@ public class Viterbi
                 //compute and store log(e_t(S[i+1])) + prevColMax 
                 for(int row = 0; row < allTags.length; row++){
 
+                    String[] kHist = lastElements(history, k-1);
+
                     //compute max(v_s(i)+log(a_s(t)))
                     double prevColMax = 0.0;
-                    for(int prevRow = 0; prevRow < allTags.length; prevRow++)
-                        if(prevColMax < (probMax[prevRow+1][i] + log(transM[allTags[prevRow]][allTags[row]])))
-                            prevColMax = probMax[prevRow+1][i] + log(transM[allTags[prevRow]][allTags[row]])); 
-                    
+                    String [] prevHist = kHist.clone();
+                    for(int prevRow = 0; prevRow < allTags.length; prevRow++){
+                        prevHist[prevHist-1] = allTags[prevRow];
+                        prevColMax = Math.max(prevColMax , probMax[prevRow+1][i] + Math.log(transitionProbability(prevHist,allTags[row])));
+                    }
+
                     // store the probability in the matrix
-                    String[] kHist = String[k];
-                    if(history.length > k)
-                    {
-                        for(int j = 0; j < k; j++)
-                        {
-                            kHist[j] = history[history.length -k +j];
-                        }
-                    }
-                    else
-                    {
-                        kHist = history;
-                    }
-                    probM[row + 1][i+1] = log(probability(history,tt.token(),allTags[row])) + prevColMax;
+                    probM[row + 1][i+1] = Math.log(probability(history,tt.token(),allTags[row])) + prevColMax;
                     index = probM[row + 1][i+1] > probM[index+1][i+1] ? row : index;
                 }
             }
