@@ -204,4 +204,6 @@ public class HMMLearner
         // return sum == 0? Double.NaN : Math.log(new Integer(this.getFormatedInitial(searchKey)).doubleValue()/sum.doubleValue());
         return sum == 0? Double.NaN : new Integer(this.getFormatedInitial(searchKey)).doubleValue()/sum.doubleValue();
     }
+
+    public String[] allTags(){ return allTags; }
 }
