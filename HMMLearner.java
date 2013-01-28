@@ -29,6 +29,7 @@ public class HMMLearner
     {
         this.k = k;
         readRecursively(directory);
+        formatModel();
     }
 
     /*
@@ -114,7 +115,6 @@ public class HMMLearner
         {
             reader = new FileReader(f);
             readToModelWithIterator(f, model, new TupleIterator(new BrownReader(reader), k));
-            formatModel();
         }
         finally
         {
@@ -204,6 +204,4 @@ public class HMMLearner
         // return sum == 0? Double.NaN : Math.log(new Integer(this.getFormatedInitial(searchKey)).doubleValue()/sum.doubleValue());
         return sum == 0? Double.NaN : new Integer(this.getFormatedInitial(searchKey)).doubleValue()/sum.doubleValue();
     }
-
-    public String[] allTags(){ return allTags; }
 }
