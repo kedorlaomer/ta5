@@ -189,6 +189,21 @@ public class HMMLearner
         }
     }
 
+    // public void getProbabilityFrom(HashMap<List<String>, Double> model,
+    //     HashMap<List<String>, Integer> from)
+    // {
+    //     String [] prevTags;
+    //     String token, tag;
+    //     for (List<String> key : from.keySet())
+    //     {
+    //         prevTags = key.toArray(new String[key.size() - 2]);
+    //         token = key.get(key.size() - 2);
+    //         tag = key.get(key.size() - 1);
+
+    //         model.put(key, probability(prevTags, token, tag));
+    //     }
+    // }
+
     public void getProbabilityFrom(HashMap<List<String>, Double> model,
         HashMap<List<String>, Integer> from)
     {
@@ -199,8 +214,15 @@ public class HMMLearner
             prevTags = key.toArray(new String[key.size() - 2]);
             token = key.get(key.size() - 2);
             tag = key.get(key.size() - 1);
+            
+            Integer sum = new Integer(0);
+            for(String currentTag : allTags){
+                ArrayList<String> auxList = ((ArrayList<String>)((ArrayList<String>)key).clone());
+                auxList.set(auxList.size()-1,currentTag);
+                sum += this.getFormatedModel(auxList);
+            }
 
-            model.put(key, probability(prevTags, token, tag));
+            model.put(key, sum == 0? Double.NaN : new Integer(this.getFormatedModel((ArrayList<String>)key)).doubleValue()/sum.doubleValue());
         }
     }
 
@@ -225,7 +247,6 @@ LOOP:
                     continue LOOP; 
             if(!key.get(k-1).equals(token))
                 continue LOOP;
-            sum += this.getFormatedModel((ArrayList<String>)key);
         }
         /* the returning value is NaN if sum == 0 and otherwise it is "value of searchkey/value of all keys with same history and token"
          */
