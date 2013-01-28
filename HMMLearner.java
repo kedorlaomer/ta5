@@ -165,14 +165,14 @@ public class HMMLearner
     }
 
 
-    public void initLaplaceModel()
+    public void initProbabilityModel()
     {
         ArrayList<String> prevTags;
         String token, tag;
         for (List<String> key : formatedModel.keySet())
         {
-            token = key.get(key.size() - 1);
-            tag = key.get(key.size() - 2);
+            token = key.get(key.size() - 2);
+            tag = key.get(key.size() - 1);
 
             prevTags = new ArrayList<String>(key);
             prevTags.removeRange(key.size() - 2, key.size());
