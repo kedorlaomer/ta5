@@ -9,14 +9,12 @@ public class HMMLearner
 {
     /* all k-tuples */
     private HashMap<List<TaggedToken>, Integer> model = new HashMap<List<TaggedToken>, Integer>();
-
-    private HashMap<List<String>, Integer> formatedModel = new HashMap<List<String>, Integer>();
-
     /* k-tuples at sentence openings */
     private HashMap<List<TaggedToken>, Integer> initial = new HashMap<List<TaggedToken>, Integer>();
 
     //not necessary
-    private HashMap<List<String>, Integer> formatedInitial = new HashMap<List<String>, Integer>();
+    public HashMap<List<String>, Integer> formatedModel = new HashMap<List<String>, Integer>();
+    public HashMap<List<String>, Integer> formatedInitial = new HashMap<List<String>, Integer>();
     
     public HashMap<List<String>, Double> probabilityModel = new HashMap<List<String>, Double>();
     public HashMap<List<String>, Double> probabilityInitial = new HashMap<List<String>, Double>();
@@ -33,6 +31,11 @@ public class HMMLearner
      * recursively reads all files in the directory and saves all the
      * frequencies of all k-tuples to model and initial
      */
+
+    public HMMLearner(int k)
+    {
+        this.k = k;
+    }
 
     public HMMLearner(File directory, int k) throws IOException
     {
