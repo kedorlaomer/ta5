@@ -21,6 +21,7 @@ public class HMMLearner
     public HashMap<List<String>, Double> probabilityModel = new HashMap<List<String>, Double>();
     public HashMap<List<String>, Double> probabilityInitial = new HashMap<List<String>, Double>();
 
+    
     public String[] allTags = {".","(",")","*","--",",",":","ABL","ABN","ABX","AP","AT","BE","BED","BEDZ",
         "BEG","BEM","BEN","BER","BEZ","CC","CD","CS","DO","DOD","DOZ","DT","DTI","DTS","DTX",
         "EX","FW","HV","HVD","HVG","HVN","IN","JJ","JJR","JJS","JJT","MD","NC","NN","NN$","NNS","NNS$","NP",
@@ -40,7 +41,7 @@ public class HMMLearner
         formatModel();
         formatInitial();
         getProbabilityFrom(probabilityModel, formatedModel);
-        getProbabilityFrom(probabilityInitial, formatedInitial);
+        getInitialProbabilityFrom(probabilityInitial, formatedInitial);
     }
 
     /*
@@ -175,23 +176,16 @@ public class HMMLearner
 
     private void formatInitial()
     {
-        for(List<TaggedToken> key : initial.keySet())
-        {
-            ArrayList<String> newKey = new ArrayList<String>();
-            for(int i = 0; i < key.size(); i++)
-                if(i == key.size()-1)
-                {
-                    newKey.add(key.get(i).token());
-                    newKey.add(key.get(i).tag());
-                }
-                else
-                    newKey.add(key.get(i).tag());
-
-            Integer value = new Integer(this.getInitial((TaggedToken[])key.toArray()));
-            if(formatedInitial.containsKey(newKey))
-                value += new Integer(this.getFormatedInitial(newKey));
-            formatedInitial.put(newKey,value);
-        }
+        if(k < 2)
+            for(List<TaggedToken> key : initial.keySet())
+            {
+                ArrayList<String> newKey = new ArrayList<String>();
+                newKey.add(key.get(0).tag());
+                Integer value = new Integer(this.getInitial((TaggedToken[])key.toArray()));
+                if(formatedInitial.containsKey(newKey))
+                    value += new Integer(this.getFormatedInitial(newKey));
+                formatedInitial.put(newKey,value);
+            }
     }
 
     // public void getProbabilityFrom(HashMap<List<String>, Double> model,
@@ -212,14 +206,28 @@ public class HMMLearner
     public void getProbabilityFrom(HashMap<List<String>, Double> model,
         HashMap<List<String>, Integer> from)
     {
-        String [] prevTags;
+        String [] prevTags = new String[k-1];
         String token, tag;
         for (List<String> key : from.keySet())
         {
-            prevTags = key.toArray(new String[key.size() - 2]);
-            token = key.get(key.size() - 2);
-            tag = key.get(key.size() - 1);
+            // if(k == 1)
+            // {
+            //     System.out.println("+++++++++++++++++");
+            //     System.out.println(key.toString());
+            //     System.out.println(key.size());
             
+            // }
+            tag = key.get(key.size() - 1);
+            token = key.get(key.size() - 2);
+            if(k > 1)
+            {
+                for(int j = 0; j<key.size()-2; j++)
+                    prevTags[j]=key.get(j);
+                // prevTags = (String[])((key.subList(0,key.size()-2)).toArray());
+                // System.out.println("\n");
+                // System.out.println("previous tags");
+                // System.out.println(prevTags.toString());
+            }
             Integer sum = new Integer(0);
             for(String currentTag : allTags){
                 ArrayList<String> auxList = ((ArrayList<String>)((ArrayList<String>)key).clone());
@@ -227,7 +235,28 @@ public class HMMLearner
                 sum += this.getFormatedModel(auxList);
             }
 
-            model.put(key, sum == 0? Double.NaN : new Integer(this.getFormatedModel((ArrayList<String>)key)).doubleValue()/sum.doubleValue());
+        }
+    }
+
+    public void getInitialProbabilityFrom(HashMap<List<String>, Double> model,
+        HashMap<List<String>, Integer> from)
+    {
+        if(k < 2)
+        {
+            String tag;
+            for (List<String> key : from.keySet())
+            {
+                tag = key.get(key.size() - 1);
+                
+                Integer sum = new Integer(0);
+                for(String currentTag : allTags){
+                    ArrayList<String> auxList = ((ArrayList<String>)((ArrayList<String>)key).clone());
+                    auxList.set(auxList.size()-1,currentTag);
+                    sum += this.getFormatedModel(auxList);
+                }
+
+                model.put(key, sum == 0? Double.NaN : new Integer(this.getFormatedModel((ArrayList<String>)key)).doubleValue()/sum.doubleValue());
+            }
         }
     }
 
