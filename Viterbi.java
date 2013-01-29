@@ -6,9 +6,14 @@ public class Viterbi
     private int k;
     private HMMLearner[] learners;
     private double[] a; 
-    private double???? transM; 
-    private String[] allTags;
     private double[][] probM = new double[150][300]; //150 rows and 300 columns
+
+    private String[] allTags = {".","(",")","*","--",",",":","ABL","ABN","ABX","AP","AT","BE","BED","BEDZ",
+        "BEG","BEM","BEN","BER","BEZ","CC","CD","CS","DO","DOD","DOZ","DT","DTI","DTS","DTX",
+        "EX","FW","HV","HVD","HVG","HVN","IN","JJ","JJR","JJS","JJT","MD","NC","NN","NN$","NNS","NNS$","NP",
+        "NP$","NPS","NPS$","NR","OD","PN","PN$","PP$","PP$$","PPL","PPLS","PPO","PPS","PPSS","PRP",
+        "PRP$","QL","QLP","RB","RBR","RBT","RN","RP","TO","UH","VB","VBD","VBG","VBN","VBP","VBZ","WDT","WP$","WPO","WPS","WQL","WRB"};
+    
 
     /*
      * reads an up to order k HMM model from directory's corpus
@@ -45,7 +50,7 @@ public class Viterbi
     public TaggedToken[] tagSentence(TaggedToken[] sentence)
     {
         clearMatrix();
-        String[] history = new  String[]();
+        String[] history = new  String[sentence.length+1];
         for(int i = 0; i < sentence.length; i++)
         {
             int index = 0;
@@ -59,30 +64,29 @@ public class Viterbi
             else
             {
                 //compute and store log(e_t(S[i+1])) + prevColMax 
+                String[] kHist = lastElements(history, k-1);
                 for(int row = 0; row < allTags.length; row++){
-
-                    String[] kHist = lastElements(history, k-1);
 
                     //compute max(v_s(i)+log(a_s(t)))
                     double prevColMax = 0.0;
                     String [] prevHist = kHist.clone();
                     for(int prevRow = 0; prevRow < allTags.length; prevRow++){
-                        prevHist[prevHist-1] = allTags[prevRow];
-                        prevColMax = Math.max(prevColMax , probMax[prevRow+1][i] + Math.log(transitionProbability(prevHist,allTags[row])));
+                        prevHist[prevHist.length-1] = allTags[prevRow];
+                        prevColMax = Math.max(prevColMax , probM[prevRow+1][i] + Math.log(transitionProbability(prevHist,allTags[row])));
                     }
 
                     // store the probability in the matrix
-                    probM[row + 1][i+1] = Math.log(probability(history,tt.token(),allTags[row])) + prevColMax;
+                    probM[row + 1][i+1] = Math.log(probability(kHist,tt.token(),allTags[row])) + prevColMax;
                     index = probM[row + 1][i+1] > probM[index+1][i+1] ? row : index;
                 }
             }
             //update history
-            history[i] = allTags(index);
+            history[i] = allTags[index];
         }
         // Now we have the matrix initialized
         // We go backwards getting the best tags
-        TaggedToken[] r = TaggedToken[]();
-        for(int i = 0; i < history.length; i++)
+        TaggedToken [] r = new TaggedToken [sentence.length];
+        for(int i = 0; i < sentence.length; i++)
             r[i] = new TaggedToken(sentence[i].token()+"/"+history[i]);
 
         return r;
@@ -135,7 +139,7 @@ public class Viterbi
      * returns the n last elements of arr
      */
 
-    protected String[] lastElements(String[] arr, int n)
+    private String[] lastElements(String[] arr, int n)
     {
         n = Math.min(n, arr.length);
         String[] rv = new String[n];
@@ -143,7 +147,7 @@ public class Viterbi
         return rv;
     }
 
-    private transitionProbability(String tags[], String tag)
+    private double transitionProbability(String tags[], String tag)
     {
         return learners[tags.length].transitionProbability(tags, tag);
     }

@@ -19,6 +19,11 @@ public class HMMLearner
     public HashMap<List<String>, Double> probabilityModel = new HashMap<List<String>, Double>();
     public HashMap<List<String>, Double> probabilityInitial = new HashMap<List<String>, Double>();
 
+    public String[] allTags = {".","(",")","*","--",",",":","ABL","ABN","ABX","AP","AT","BE","BED","BEDZ",
+        "BEG","BEM","BEN","BER","BEZ","CC","CD","CS","DO","DOD","DOZ","DT","DTI","DTS","DTX",
+        "EX","FW","HV","HVD","HVG","HVN","IN","JJ","JJR","JJS","JJT","MD","NC","NN","NN$","NNS","NNS$","NP",
+        "NP$","NPS","NPS$","NR","OD","PN","PN$","PP$","PP$$","PPL","PPLS","PPO","PPS","PPSS","PRP",
+        "PRP$","QL","QLP","RB","RBR","RBT","RN","RP","TO","UH","VB","VBD","VBG","VBN","VBP","VBZ","WDT","WP$","WPO","WPS","WQL","WRB"};
     private int k;
 
     /*
@@ -36,6 +41,7 @@ public class HMMLearner
         this.k = k;
         readRecursively(directory);
         formatModel();
+        formatInitial();
         initProbabilityFrom(probabilityModel, formatedModel);
         initProbabilityFrom(probabilityInitial, formatedInitial);
     }
@@ -85,7 +91,7 @@ public class HMMLearner
         Integer rv = initial.get(Arrays.asList(tt));
         return rv == null? 0 : rv;
     }
-    public int getInitial(ArrayList<String> key)
+    public int getInitial(ArrayList<TaggedToken> key)
     {
         Integer rv = initial.get(key);
         return rv == null? 0 : rv;
@@ -170,6 +176,41 @@ public class HMMLearner
         }
     }
 
+    private void formatInitial()
+    {
+        for(List<TaggedToken> key : initial.keySet())
+        {
+            ArrayList<String> newKey = new ArrayList<String>();
+            for(int i = 0; i < key.size(); i++)
+                if(i == key.size()-1)
+                {
+                    newKey.add(key.get(i).token());
+                    newKey.add(key.get(i).tag());
+                }
+                else
+                    newKey.add(key.get(i).tag());
+
+            Integer value = new Integer(this.getInitial((TaggedToken[])key.toArray()));
+            if(formatedInitial.containsKey(newKey))
+                value += new Integer(this.getFormatedInitial(newKey));
+            formatedInitial.put(newKey,value);
+        }
+    }
+
+    // public void getProbabilityFrom(HashMap<List<String>, Double> model,
+    //     HashMap<List<String>, Integer> from)
+    // {
+    //     String [] prevTags;
+    //     String token, tag;
+    //     for (List<String> key : from.keySet())
+    //     {
+    //         prevTags = key.toArray(new String[key.size() - 2]);
+    //         token = key.get(key.size() - 2);
+    //         tag = key.get(key.size() - 1);
+
+    //         model.put(key, probability(prevTags, token, tag));
+    //     }
+    // }
 
     public void initProbabilityFrom(HashMap<List<String>, Double> model,
         HashMap<List<String>, Integer> from)
@@ -181,8 +222,15 @@ public class HMMLearner
             prevTags = key.toArray(new String[key.size() - 2]);
             token = key.get(key.size() - 2);
             tag = key.get(key.size() - 1);
+            
+            Integer sum = new Integer(0);
+            for(String currentTag : allTags){
+                ArrayList<String> auxList = ((ArrayList<String>)((ArrayList<String>)key).clone());
+                auxList.set(auxList.size()-1,currentTag);
+                sum += this.getFormatedModel(auxList);
+            }
 
-            model.put(key, probability(prevTags, token, tag));
+            model.put(key, sum == 0? Double.NaN : new Integer(this.getFormatedModel((ArrayList<String>)key)).doubleValue()/sum.doubleValue());
         }
     }
 
@@ -207,7 +255,6 @@ LOOP:
                     continue LOOP; 
             if(!key.get(k-1).equals(token))
                 continue LOOP;
-            sum += this.getFormatedModel((ArrayList<String>)key);
         }
         /* the returning value is NaN if sum == 0 and otherwise it is "value of searchkey/value of all keys with same history and token"
          */
