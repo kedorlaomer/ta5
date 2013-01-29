@@ -115,8 +115,8 @@ public class Viterbi
      */
     private void clearMatrix()
     {
-        for(int col = 1; col < probM.length; col++)
-            for(int row = 1; row < probM[0].length; row++)
+        for(int row = 1; row < probM.length; row++)
+            for(int col = 1; col < probM[0].length; col++)
                 probM[row][col] = 0.0;
     }
 
