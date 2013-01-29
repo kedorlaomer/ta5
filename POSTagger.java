@@ -71,8 +71,8 @@ public class POSTagger
 
         int k = 3;
         HMMLearner[] learners = new HMMLearner[k];
-        for (int i = 1; i =< k; i++)
-            learners[i] = new HMMLearner(directory, i);
+        for (int i = 1; i <= k; i++)
+            learners[i] = new HMMLearner(i);
 
         Viterbi vit = new Viterbi(learners, new double[]{1, 1, 1});
         File directory = new File(path);
