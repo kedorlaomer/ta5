@@ -80,7 +80,6 @@ public class POSTagger
         for (int i = 0; i < k; i++) {
             learners[i] = new HMMLearner(new File(directory), i + 1);
             saveLearner(learners[i], i + 1);
-            System.out.println(learners[i].probabilityModel.size());            
         }
     }
 
