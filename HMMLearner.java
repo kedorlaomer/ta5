@@ -19,12 +19,22 @@ public class HMMLearner
     public HashMap<List<String>, Double> probabilityModel = new HashMap<List<String>, Double>();
     public HashMap<List<String>, Double> probabilityInitial = new HashMap<List<String>, Double>();
 
+    public HashMap<List<String>, Integer> transitionCount = new HashMap<List<String>, Integer>();
+    public HashMap<List<String>, Double> transitionProb = new HashMap<List<String>, Double>();
     
-    public String[] allTags = {".","(",")","*","--",",",":","ABL","ABN","ABX","AP","AT","BE","BED","BEDZ",
-        "BEG","BEM","BEN","BER","BEZ","CC","CD","CS","DO","DOD","DOZ","DT","DTI","DTS","DTX",
-        "EX","FW","HV","HVD","HVG","HVN","IN","JJ","JJR","JJS","JJT","MD","NC","NN","NN$","NNS","NNS$","NP",
-        "NP$","NPS","NPS$","NR","OD","PN","PN$","PP$","PP$$","PPL","PPLS","PPO","PPS","PPSS","PRP",
-        "PRP$","QL","QLP","RB","RBR","RBT","RN","RP","TO","UH","VB","VBD","VBG","VBN","VBP","VBZ","WDT","WP$","WPO","WPS","WQL","WRB"};
+    private String[] allTags = { "'", "''", "(", ")", "*", ",",
+        "--", ".", ":", "``", "abl", "abn", "abx", "ap", "ap$",
+        "at", "be", "bed", "bedz", "beg", "bem", "ben", "ber",
+        "bez", "cc", "cd", "cd$", "cs", "do", "dod", "doz", "dt",
+        "dt$", "dti", "dts", "dtx", "ex", "fw", "hv", "hvd", "hvg",
+        "hvn", "hvz", "in", "jj", "jj$", "jjr", "jjs", "jjt", "md",
+        "nil", "nn", "nn$", "nns", "nns$", "np", "np$", "nps",
+        "nps$", "nr", "nr$", "nrs", "od", "pn", "pn$", "pp$",
+        "pp$$", "ppl", "ppls", "ppo", "pps", "ppss", "ql", "qlp",
+        "rb", "rb$", "rbr", "rbt", "rn", "rp", "to", "uh", "vb",
+        "vbd", "vbg", "vbn", "vbz", "wdt", "wp$", "wpo", "wps",
+        "wql", "wrb" };
+
     private int k;
 
     /*
@@ -43,8 +53,10 @@ public class HMMLearner
         readRecursively(directory);
         formatModel();
         formatInitial();
+        formatTransition();
         getProbabilityFrom(probabilityModel, formatedModel);
         getInitialProbabilityFrom(probabilityInitial, formatedInitial);
+        getTranistionProbabilityFrom(transitionProb, transitionCount);
     }
 
     /*
@@ -106,6 +118,12 @@ public class HMMLearner
     public int getFormatedInitial(ArrayList<String> key)
     {
         Integer rv = formatedInitial.get(key);
+        return rv == null? 0 : rv;
+    }
+
+    public int getTransitionCount(ArrayList<String> key)
+    {
+        Integer rv = transitionCount.get(key);
         return rv == null? 0 : rv;
     }
 
@@ -177,6 +195,22 @@ public class HMMLearner
         }
     }
 
+    //TODO: put in formatModel
+    private void formatTransition()
+    {
+        for(List<TaggedToken> key : model.keySet())
+        {
+            ArrayList<String> newKey = new ArrayList<String>();
+            for(int i = 0; i < key.size(); i++)
+                newKey.add(key.get(i).tag());                        
+
+            Integer value = new Integer(0);
+            if(transitionCount.containsKey(newKey))
+                value += new Integer(this.getTransitionCount(newKey));
+            transitionCount.put(newKey,value + new Integer(this.getModel((TaggedToken[])key.toArray())));
+        }
+    }
+
     private void formatInitial()
     {
         if(k < 2)
@@ -191,54 +225,47 @@ public class HMMLearner
             }
     }
 
-    // public void getProbabilityFrom(HashMap<List<String>, Double> model,
-    //     HashMap<List<String>, Integer> from)
-    // {
-    //     String [] prevTags;
-    //     String token, tag;
-    //     for (List<String> key : from.keySet())
-    //     {
-    //         prevTags = key.toArray(new String[key.size() - 2]);
-    //         token = key.get(key.size() - 2);
-    //         tag = key.get(key.size() - 1);
-
-    //         model.put(key, probability(prevTags, token, tag));
-    //     }
-    // }
 
     public void getProbabilityFrom(HashMap<List<String>, Double> model,
         HashMap<List<String>, Integer> from)
     {
-        System.out.println("============================");
-        System.out.println("in getProbabilityFrom");
-        System.out.println("============================");
+        // System.out.println("============================");
+        // System.out.println("in getProbabilityFrom");
+        // System.out.println("============================");
+        // System.out.println("k is "+new Integer(k).toString());
         
         String [] prevTags = new String[k-1];
         String token, tag;
+        // int count = 0;
         for (List<String> key : from.keySet())
         {
             // if(k == 1)
             // {
             //     System.out.println("+++++++++++++++++");
+            // if(count<5)
+            // {
             //     System.out.println(key.toString());
-            //     System.out.println(key.size());
-            
+            //     count++;
             // }
-            tag = key.get(key.size() - 1);
-            token = key.get(key.size() - 2);
-            if(k > 1)
-            {
-                for(int j = 0; j<key.size()-2; j++)
-                    prevTags[j]=key.get(j);
+            //     System.out.println(key.size());
+            // }
+
+            // tag = key.get(key.size() - 1);
+            // token = key.get(key.size() - 2);
+                // if(k > 1)
+                // {
+                //     for(int j = 0; j<key.size()-2; j++)
+                //         prevTags[j]=key.get(j);
                 // prevTags = (String[])((key.subList(0,key.size()-2)).toArray());
                 // System.out.println("\n");
                 // System.out.println("previous tags");
                 // System.out.println(prevTags.toString());
-            }
+                // }
             Integer sum = new Integer(0);
             for(String currentTag : allTags)
             {
                 ArrayList<String> auxList = ((ArrayList<String>)((ArrayList<String>)key).clone());
+                
                 auxList.set(auxList.size()-1,currentTag);
                 // System.out.println("auxList: "+auxList.toString());
                 sum += this.getFormatedModel(auxList);
@@ -248,9 +275,17 @@ public class HMMLearner
             // System.out.println("key: "+key.toString());
             // System.out.println("key value: "+new Integer(this.getFormatedModel((ArrayList<String>)key)).toString());
             // System.out.println("sum: "+new Integer(sum).toString());
-
             model.put(key, sum == 0? Double.NaN : new Integer(this.getFormatedModel((ArrayList<String>)key)).doubleValue()/sum.doubleValue());
         }
+        // if(k==1)
+        // {
+        //     for(List<String> x : from.keySet())
+        //         if(x.get(x.size() - 1).equals("bez") && x.get(x.size() - 2).equals("is"))
+        //             System.out.println("model should have this key"+x.toString());
+        //     for(List<String> x : model.keySet())
+        //         if(x.get(x.size() - 1).equals("bez") && x.get(x.size() - 2).equals("is"))
+        //             System.out.println("model should have this key"+x.toString());
+        // }
     }
 
     public void getInitialProbabilityFrom(HashMap<List<String>, Double> model,
@@ -258,13 +293,13 @@ public class HMMLearner
     {
         if(k < 2)
         {
-            System.out.println("============================");
-            System.out.println("in getInitialProbabilityFrom");
-            System.out.println("============================");
-            String tag;
+            // System.out.println("============================");
+            // System.out.println("in getInitialProbabilityFrom");
+            // System.out.println("============================");
+            // String tag;
             for (List<String> key : from.keySet())
             {
-                tag = key.get(key.size() - 1);
+                // tag = key.get(key.size() - 1);
                 
                 Integer sum = new Integer(0);
                 for(String currentTag : allTags){
@@ -285,19 +320,49 @@ public class HMMLearner
         }
     }
 
+    public void getTranistionProbabilityFrom(HashMap<List<String>, Double> model,
+        HashMap<List<String>, Integer> from)
+    {
+        String [] prevTags = new String[k-1];
+        String tag;
+        for (List<String> key : from.keySet())
+        {
+            Integer sum = new Integer(0);
+            for(String currentTag : allTags)
+            {
+                ArrayList<String> auxList = ((ArrayList<String>)((ArrayList<String>)key).clone());
+                
+                auxList.set(auxList.size()-1,currentTag);
+                sum += this.getTransitionCount(auxList);
+            }
+            model.put(key, sum == 0? Double.NaN : new Integer(this.getTransitionCount((ArrayList<String>)key)).doubleValue()/sum.doubleValue());
+        }
+    }
+
+
 
     /* Gives the probability that a given token has a given tag with respect to the given history of tags.
      */
     public double probability(String[] history, String token, String tag)
     {
+        System.out.println("k is "+new Integer(k).toString());
+        // for(List<String> x : probabilityModel.keySet())
+        //      if(x.get(x.size() - 1).equals("bez") && x.get(x.size() - 2).equals("is"))
+        //         System.out.println("model should have this key"+x.toString());
+
         // ArrayList<String> ar = (ArrayList<String>)Arrays.asList(history);
         ArrayList<String> ar = new ArrayList<String>();
         for(int i = 0; i < history.length; i++)
             ar.add(history[i]);
         ar.add(token);
         ar.add(tag);
-        if (probabilityModel.containsKey(ar))
+        System.out.println("ar: "+ar.toString());
+        if(tag.equals("bez"))
+            System.out.println("key is "+ar.toString());
+        if (probabilityModel.containsKey(ar)){
+            System.out.println("key is contained");
             return probabilityModel.get(ar);
+        }
         else 
             return Double.NaN;
     }
@@ -318,21 +383,12 @@ public class HMMLearner
     public double transitionProbability(String tags[], String tag)
     {
         int good = 0, all = 0;
-LOOP:
-        for (List<TaggedToken> list : model.keySet())
-        {
-            for (int i = 0; i < k-1; i++)
-                if (!list.get(i).tag().equals(tags[i]))
-                    continue LOOP;
-
-            all += model.get(list);
-
-            if (!list.get(k-1).tag().equals(tag))
-                continue LOOP;
-
-            good += model.get(list);
-        }
-
-        return ((double) good)/all;
+        ArrayList<String> al = new ArrayList<String>(Arrays.asList(tags));
+        al.add(tag);
+        // System.out.println("in transitionProb with key: "+al.toString()); 
+        if(transitionProb.containsKey(al))
+            return transitionProb.get(al);
+        else 
+            return Double.NaN;
     }
 }

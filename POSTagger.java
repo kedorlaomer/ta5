@@ -29,8 +29,8 @@ public class POSTagger
         try {
             writeModel(output, learner.probabilityModel);
             writeModel(output, learner.probabilityInitial);
-            writeModel(output, learner.transitionalProb);
-            writeModel(output, back.distribution);
+            writeModel(output, learner.transitionProb);
+            // writeModel(output, back.distribution);
         }
         finally {
             output.close();
@@ -44,8 +44,8 @@ public class POSTagger
         try {
             readModel(input, learner.probabilityModel);
             readModel(input, learner.probabilityInitial);
-            readModel(input, learner.transitionalProb);
-            readModel(input, back.distribution);
+            readModel(input, learner.transitionProb);
+            // readModel(input, back.distribution);
         }
         finally {
             input.close();
@@ -80,6 +80,7 @@ public class POSTagger
     {
         int k = 3;
         HMMLearner[] learners = new HMMLearner[k];
+        BackoffModel back = new BackoffModel();
 
         for (int i = 0; i < k; i++) {
             learners[i] = new HMMLearner(new File(directory), i + 1);

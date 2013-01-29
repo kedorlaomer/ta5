@@ -50,6 +50,8 @@ public class Viterbi
             probM[0][col] = 0;
 
         probM[0][0] = 1;
+
+        backoff = new BackoffModel(new File("brown_learn"),0.2);
     }
 
     /*
@@ -69,9 +71,9 @@ public class Viterbi
      */
     public TaggedToken[] tagSentence(TaggedToken[] sentence)
     {
+        System.out.println(new Date());
         clearMatrix();
-        String[] history = new  String[sentence.length+1];
-        
+        ArrayList<String> history = new ArrayList<String>();
         System.out.println("incoming sentence:");
         for(int i = 0; i < sentence.length; i++)
             System.out.println(sentence[i].toString());
@@ -93,31 +95,51 @@ public class Viterbi
                         System.out.println("index changed at column: "+new Integer(i).toString());
                         index = row;
                     }
-                    else
-                    {
-                        System.out.println("value for index "+new Integer(index).toString()+" : "+new Double(probM[index+1][i+1]).toString());
-                        System.out.println("new value "+new Integer(row).toString()+" : "+new Double(probM[index+1][i+1]).toString());
-                    }
+                    // else
+                    // {
+                        // System.out.println("value for index "+new Integer(index).toString()+" : "+new Double(probM[index+1][i+1]).toString());
+                        // System.out.println("new value "+new Integer(row).toString()+" : "+new Double(probM[index+1][i+1]).toString());
+                    // }
                 }
             else
             {
                 //compute and store log(e_t(S[i+1])) + prevColMax 
-                String[] kHist = lastElements(history, k-1);
+                ArrayList<String> kHist = lastElements(history,k);
+                ArrayList<String> prevHist = (ArrayList<String>)kHist.clone();
                 for(int row = 0; row < allTags.length; row++)
                 {
                     //compute max(v_s(i)+log(a_s(t)))
-                    double prevColMax = 0.0;
-                    String [] prevHist = kHist.clone();
+
+
+
+
+                    double prevColMax = Double.NEGATIVE_INFINITY;
                     for(int prevRow = 0; prevRow < allTags.length; prevRow++){
-                        prevHist[prevHist.length-1] = allTags[prevRow];
-                        prevColMax = Math.max(prevColMax , probM[prevRow+1][i] + Math.log(transitionProbability(prevHist,allTags[row])));
+                        prevHist.set(prevHist.size()-1,allTags[prevRow]);
+                        // System.out.println("prevHist: "+prevHist.toString());
+                        prevColMax = Math.max(prevColMax , probM[prevRow+1][i] + 
+                            Math.log(transitionProbability((String[])prevHist.toArray(new String[prevHist.size()]) , allTags[row])));
                     }
+                    prevColMax = Math.max(prevColMax , 0);
+                    System.out.println("prevColMax: "+new Double(prevColMax).toString());
+
+                    
+
 
                     // store the probability in the matrix
+                    // for(int j=0;j<history.size(); j++){System.out.println("history["+new Integer(j).toString()+"] = "+history.get(j));}
+                    // for(int j=0;j<kHist.size(); j++){System.out.println("kHist["+new Integer(j).toString()+"] = "+kHist.get(j));}
+                    System.out.println("k: "+new Integer(k).toString());
+                    // probM[row + 1][i+1] = Math.log(probability((String[])kHist.toArray(new String[kHist.size()]),tt.token(),allTags[row])) + prevColMax;
                     probM[row + 1][i+1] = Math.log(probability(kHist,tt.token(),allTags[row])) + prevColMax;
+                    System.out.println("probM[row + 1][i+1]: "+new Double(probM[row + 1][i+1]).toString());
+                    System.out.println("probM[index+1][i+1]: "+new Double(probM[index+1][i+1]).toString());
+
+                    System.out.println("prevColMax: "+new Double(prevColMax).toString());
+
                     // index = probM[row + 1][i+1] >= probM[index+1][i+1] ? row : index;
                 
-                    if(probM[row + 1][i+1] > probM[index+1][i+1])
+                    if(probM[row + 1][i+1] > probM[index+1][i+1] || Double.isNaN(probM[index+1][i+1]))
                     {
                         System.out.println("index changed at column: "+new Integer(i).toString());
                         index = row;
@@ -131,13 +153,14 @@ public class Viterbi
             }
             System.out.println("Index for column "+new Integer(i).toString()+" is: "+new Integer(index).toString());
             //update history
-            history[i] = allTags[index];
+            history.add(allTags[index]);
         }
+        System.out.println(new Date());
         // Now we have the matrix initialized
         // We go backwards getting the best tags
         TaggedToken [] r = new TaggedToken [sentence.length];
         for(int i = 0; i < sentence.length; i++)
-            r[i] = new TaggedToken(sentence[i].token()+"/"+history[i]);
+            r[i] = new TaggedToken(sentence[i].token()+"/"+history.get(i));
 
         System.out.println("outcoming sentence:");
         for(int i = 0; i < sentence.length; i++)
@@ -170,44 +193,64 @@ public class Viterbi
      * Returns the probability for token getting tag with this
      * history. 
      */ 
-    private double probability(String[] history, String token, String tag)
+    private double probability(ArrayList<String> history, String token, String tag)
     {
+        System.out.println("================ probability =================");
+        System.out.println("token: "+token);
+        System.out.println("tag: "+tag);
+        System.out.println("history: "+history.toString());
+
         double rv = 0;
         double denom = 0;
 
         for (int i = 0; i < k; i++)
-            if(i < history.length)
+            if(i <= history.size())
             {
-                String[] h = new String[i];
-                System.arraycopy(history, k-i-1, h, 0, i);
-                double p = learners[i].probability(h, token, tag);
+                ArrayList<String> h = lastElements(history,i);
+                System.out.println("h: "+h.toString());
+                
+                double p = learners[i].probability((String[])h.toArray(new String[h.size()]), token, tag);
+                System.out.println("learner["+new Integer(i).toString()+"] gives probability: "+new Double(p).toString());
                 if (!Double.isNaN(p))
                 {
+                    System.out.println(" in if case, update variables ");
                     rv += p;
                     denom += a[i];
                 }
             }
+        System.out.println("rv: "+new Double(rv).toString());
+        System.out.println("denom: "+new Double(denom).toString());
+        System.out.println("rv/denom: "+new Double(rv/denom).toString());
 
-        rv += backoff.probability(tag);
-        denom += a[k];
-
+        // rv += backoff.probability(tag);
+        // denom += a[k];
+        if(denom == 0.0)
+            return 0.0;
+        
         return rv/denom;
     }
 
     /*
      * returns the n last elements of arr
      */
-
-    protected String[] lastElements(String[] arr, int n)
+    protected ArrayList<String> lastElements(ArrayList<String> v, int numElements)
     {
-        n = Math.min(n, arr.length);
-        String[] rv = new String[n];
-        System.arraycopy(arr, arr.length-n, rv, 0, n);
+        int n = Math.min(numElements, v.size());
+        ArrayList<String> rv = new ArrayList <String>();
+        System.out.println(v.toString());
+        if(!v.isEmpty())
+            rv.addAll(v.subList(v.size()-n,v.size()));
         return rv;
     }
 
     private double transitionProbability(String tags[], String tag)
     {
-        return learners[tags.length].transitionProbability(tags, tag);
+        // System.out.println("before transitionProbability with tag: "+tag);
+        // System.out.println(new Date());
+        // System.out.println("tags size is: "+tags.length);
+        double x = learners[tags.length-1].transitionProbability(tags, tag);
+        // System.out.println("after transitionProbability");
+        // System.out.println(new Date());
+        return Double.isNaN(x) ? 0.0 : x;
     }
 }

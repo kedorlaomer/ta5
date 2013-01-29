@@ -12,19 +12,19 @@ public class ViterbiTest
         v = new Viterbi(new File("brown_learn/"), 3, new double[] {1, 1, 1});
     }
 
-    @Test public void lastElementsNormal() throws IOException
-    {
-        String[] given = new String[] {"A", "B", "C"};
-        String[] expected = new String[] {"B", "C"};
-        assertEquals(expected, v.lastElements(given, 2));
-    }
+    // @Test public void lastElementsNormal() throws IOException
+    // {
+    //     String[] given = new String[] {"A", "B", "C"};
+    //     String[] expected = new String[] {"B", "C"};
+    //     assertEquals(expected, v.lastElements(given, 2));
+    // }
 
-    @Test public void tooShort() throws IOException
-    {
-        String[] given = new String[] {"A", "B", "C"};
-        String[] expected = new String[] {"A", "B", "C"};
-        assertEquals(expected, v.lastElements(given, 5));
-    }
+    // @Test public void tooShort() throws IOException
+    // {
+    //     String[] given = new String[] {"A", "B", "C"};
+    //     String[] expected = new String[] {"A", "B", "C"};
+    //     assertEquals(expected, v.lastElements(given, 5));
+    // }
 
     @Test public void simpleSentence() throws IOException
     {
