@@ -9,7 +9,7 @@ public class ViterbiTest
 
     @Before public void setUp() throws IOException
     {
-        v = new Viterbi(new File("brown_learn"), 3, new double[] {1, 1, 1});
+        v = new Viterbi(new File("brown_learn/ca01"), 2, new double[] {1, 1});
     }
 
     @Test public void lastElementsNormal() throws IOException
@@ -47,5 +47,12 @@ public class ViterbiTest
 
     public ViterbiTest()
     {
+    }
+
+    public static void main(String[] argv) throws IOException
+    {
+        ViterbiTest test = new ViterbiTest();
+        test.setUp();
+        test.simpleSentence();
     }
 }

@@ -268,42 +268,15 @@ public class HMMLearner
      */
     public double probability(String[] history, String token, String tag)
     {
-        // What we are looking for is a list of Strings of the form <history0,...historyk-2,token,tag>
-        ArrayList <String> searchKey = new ArrayList <String>();
-        searchKey.addAll(Arrays.asList(history));
-        searchKey.add(token);
-        searchKey.add(tag);
-        Integer sum = new Integer(0);
-LOOP:
-        /* We go through all keys in formatedModel and we are looking for keys of the form <history0,...,historyk-2,token, ??>
-         *  to get their probability and add it to sum 
-         */
-        for(List<String> key : formatedModel.keySet()){
-            for(int i = 0; i < k-1; i++)
-                if(!history[i].equals(key.get(i)))
-                    continue LOOP; 
-            if(!key.get(k-1).equals(token))
-                continue LOOP;
-        }
-        /* the returning value is NaN if sum == 0 and otherwise it is "value of searchkey/value of all keys with same history and token"
-         */
-        return sum == 0? Double.NaN : new Integer(this.getFormatedModel(searchKey)).doubleValue()/sum.doubleValue();
+        List<String> ar = Arrays.asList(history);
+        ar.add(token);
+        ar.add(tag);
+        return probabilityModel.get(ar);
     }
 
     public double initialProbability(String token, String tag)
     {
-        ArrayList <String> searchKey = new ArrayList <String>();
-        searchKey.add(token);
-        searchKey.add(tag);
-        Integer sum = new Integer(0);
-LOOP:
-        for(List<String> key : formatedInitial.keySet()){
-            if(!key.get(0).equals(token))
-                continue LOOP;
-            sum += this.getFormatedInitial((ArrayList<String>)key);
-        }
-        // return sum == 0? Double.NaN : Math.log(new Integer(this.getFormatedInitial(searchKey)).doubleValue()/sum.doubleValue());
-        return sum == 0? Double.NaN : new Integer(this.getFormatedInitial(searchKey)).doubleValue()/sum.doubleValue();
+        return probabilityInitial.get(Arrays.asList(tag));
     }
 
     /*
