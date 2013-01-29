@@ -9,7 +9,7 @@ public class ViterbiTest
 
     @Before public void setUp() throws IOException
     {
-        v = new Viterbi(new File("brown_learn/ca01"), 2, new double[] {1, 1});
+        v = new Viterbi(new File("brown_learn/"), 3, new double[] {1, 1, 1});
     }
 
     @Test public void lastElementsNormal() throws IOException
@@ -30,7 +30,7 @@ public class ViterbiTest
     {
         String s = "this is a simple sentence";
         TaggedToken[] sentence = v.tagSentence(tt(s));
-        TaggedToken[] expected = t2(s, "det bez at jj nn");
+        TaggedToken[] expected = t2(s, "dt bez at jj nn");
 
         for (TaggedToken t : sentence)
             System.out.print(t + " ");
@@ -55,7 +55,7 @@ public class ViterbiTest
         TaggedToken[] rv = tt(text);
         String[] t = tags.split(" ");
         for (int i = 0; i < rv.length; i++)
-            rv[i] = new TaggedToken(rv[i].tag() + "/" + t[i]);
+            rv[i] = new TaggedToken(rv[i].token() + "/" + t[i]);
 
         return rv;
     }

@@ -22,26 +22,28 @@ public class POSTagger
         }
     }
 
-    private static void saveLearner(HMMLearner learner, int fileNo) throws IOException
+    private static void saveLearner(HMMLearner learner, BackoffModel back, int fileNo) throws IOException
     {
         DataOutputStream output = new DataOutputStream(
                                 new FileOutputStream(getModelFilename(fileNo)));
         try {
             writeModel(output, learner.probabilityModel);
             writeModel(output, learner.probabilityInitial);
+            writeModel(output, back.distribution);
         }
         finally {
             output.close();
         }
     }
 
-    private static void initLearner(HMMLearner learner, int fileNo) throws IOException
+    private static void initLearner(HMMLearner learner, BackoffModel back, int fileNo) throws IOException
     {
         DataInputStream input = new DataInputStream(
                                 new FileInputStream(getModelFilename(fileNo)));
         try {
             readModel(input, learner.probabilityModel);
             readModel(input, learner.probabilityInitial);
+            readModel(input, back.distribution);
         }
         finally {
             input.close();
@@ -79,7 +81,7 @@ public class POSTagger
 
         for (int i = 0; i < k; i++) {
             learners[i] = new HMMLearner(new File(directory), i + 1);
-            saveLearner(learners[i], i + 1);
+            saveLearner(learners[i], back, i + 1);
         }
     }
 
@@ -88,9 +90,10 @@ public class POSTagger
     {
         int k = 2;
         HMMLearner[] learners = new HMMLearner[k];
+        BackoffModel back = new BackoffModel();
         for (int i = 0; i < k; i++) {
             learners[i] = new HMMLearner(i + 1);
-            initLearner(learners[i], i + 1);
+            initLearner(learners[i], back, i + 1);
         }
 
         Viterbi vit = new Viterbi(learners, new double[]{1, 1, 1});
