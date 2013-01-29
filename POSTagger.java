@@ -61,29 +61,79 @@ public class POSTagger
     }
 
 
-    private static void annotate(String directory) throws IOException
+    private static void annotate(String path) throws IOException
     {
         DataInputStream input = new DataInputStream(
                                 new FileInputStream(modelFilename));
-        HMMLearner learner = new HMMLearner(3);
-        readModel(input, learner.probabilityInitial);
-        readModel(input, learner.probabilityModel);
-        input.close();
+        try {
+            HMMLearner learner = new HMMLearner(3);
+            readModel(input, learner.probabilityModel);
+            readModel(input, learner.probabilityInitial);
+        }
+        finally
+        {
+            input.close();
+        }
+
+        Viterbi vit = null;
+        // Viterbi vit = new Viterbi();
+        File directory = new File(path);
+        if (directory.isDirectory())
+            for (File f2 : directory.listFiles())
+                annotateFile(f2, vit);
     }
 
 
-    public static void main(String[] args) throws IOException
-    {
-        if (args.length > 1) {
+    private static void annotateFile(File inFile, Viterbi vit) throws IOException {
 
-            String directory = args[1];
+        BufferedReader reader = new BufferedReader(new FileReader(inFile));
+        File outFile = new File(inFile.getName() + ".pos");
+        if (!outFile.exists()) {
+            outFile.createNewFile();
+        }
+        BufferedWriter writer = new BufferedWriter(
+            new FileWriter(outFile.getAbsoluteFile()));
 
-            if (args[0] == "learn") {
-                learn(directory);
-            }
-            else if (args[0] == "annotate") {
-                annotate(directory);
+        try {
+
+            String sentence;
+            ArrayList ttSentence;
+            while ((sentence = reader.readLine()) != null) {
+
+                ttSentence = new ArrayList<TaggedToken>();
+
+                for (String word : sentence.split(" ")) {
+                    ttSentence.add(new TaggedToken(word + "/xxx"));
+                }
+                for(TaggedToken tt : vit.tagSentence((TaggedToken[])ttSentence.toArray())) {
+                    writer.write(tt.toString() + " ");
+                }
+                writer.newLine();
             }
         }
+        finally {
+            writer.close();
+            reader.close();
+        }
+    }
+
+
+    public static void printUsage() {
+        System.out.println("Usage: <learn|annotate> <directory>");
+    }
+
+    public static void main(String[] args) throws IOException {
+        if (args.length > 1) {
+            String directory = args[1];
+
+            if ("learn".equals(args[0])) 
+                learn(directory);
+            else if ("annotate".equals(args[0]))
+                annotate(directory);
+            else
+               printUsage();
+        } 
+        else 
+            printUsage();
     }
 }
