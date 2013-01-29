@@ -3,8 +3,10 @@ import java.io.*;
 
 public class POSTagger
 {
-    private static final String modelFilename = "model.data";
-
+    private static String getModelFilename(int fileNo)
+    {
+        return ("model" + fileNo + ".data");
+    }
 
     private static void writeModel(DataOutputStream output,
         HashMap<List<String>, Double> model) throws IOException
@@ -23,7 +25,7 @@ public class POSTagger
     private static void saveLearner(HMMLearner learner, int fileNo) throws IOException
     {
         DataOutputStream output = new DataOutputStream(
-                                new FileOutputStream(modelFilename + fileNo));
+                                new FileOutputStream(getModelFilename(fileNo)));
         try {
             writeModel(output, learner.probabilityModel);
             writeModel(output, learner.probabilityInitial);
@@ -36,7 +38,7 @@ public class POSTagger
     private static void initLearner(HMMLearner learner, int fileNo) throws IOException
     {
         DataInputStream input = new DataInputStream(
-                                new FileInputStream(modelFilename + fileNo));
+                                new FileInputStream(getModelFilename(fileNo)));
         try {
             readModel(input, learner.probabilityModel);
             readModel(input, learner.probabilityInitial);
@@ -75,9 +77,10 @@ public class POSTagger
         int k = 3;
         HMMLearner[] learners = new HMMLearner[k];
 
-        for (int i = 1; i <= k; i++) {
-            learners[i] = new HMMLearner(new File(directory), i);
-            saveLearner(learners[i], i);
+        for (int i = 0; i < k; i++) {
+            learners[i] = new HMMLearner(new File(directory), i + 1);
+            saveLearner(learners[i], i + 1);
+            System.out.println(learners[i].probabilityModel.size());            
         }
     }
 
@@ -86,9 +89,9 @@ public class POSTagger
     {
         int k = 3;
         HMMLearner[] learners = new HMMLearner[k];
-        for (int i = 1; i <= k; i++) {
-            learners[i] = new HMMLearner(i);
-            initLearner(learners[i], i);
+        for (int i = 0; i < k; i++) {
+            learners[i] = new HMMLearner(i + 1);
+            initLearner(learners[i], i + 1);
         }
 
         Viterbi vit = new Viterbi(learners, new double[]{1, 1, 1});
