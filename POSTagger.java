@@ -20,6 +20,32 @@ public class POSTagger
         }
     }
 
+    private static void saveLearner(HMMLearner learner, int fileNo) throws IOException
+    {
+        DataOutputStream output = new DataOutputStream(
+                                new FileOutputStream(modelFilename + fileNo));
+        try {
+            writeModel(output, learner.probabilityModel);
+            writeModel(output, learner.probabilityInitial);
+        }
+        finally {
+            output.close();
+        }
+    }
+
+    private static void initLearner(HMMLearner learner, int fileNo) throws IOException
+    {
+        DataInputStream input = new DataInputStream(
+                                new FileInputStream(modelFilename + fileNo));
+        try {
+            readModel(input, learner.probabilityModel);
+            readModel(input, learner.probabilityInitial);
+        }
+        finally {
+            input.close();
+        }
+    }
+
     private static void readModel(DataInputStream input,
         HashMap<List<String>, Double> model) throws IOException
     {
@@ -46,31 +72,26 @@ public class POSTagger
 
     private static void learn(String directory) throws IOException
     {
-        HMMLearner learner = new HMMLearner(new File(directory), 3);
+        int k = 3;
+        HMMLearner[] learners = new HMMLearner[k];
 
-        DataOutputStream output = new DataOutputStream(
-                                new FileOutputStream(modelFilename));
-        writeModel(output, learner.probabilityModel);
-        writeModel(output, learner.probabilityInitial);
-        output.close();
+        for (int i = 1; i <= k; i++) {
+            learners[i] = new HMMLearner(new File(directory), i);
+            saveLearner(learners[i], i);
+        }
     }
 
 
     private static void annotate(String path) throws IOException
     {
-        DataInputStream input = new DataInputStream(
-                                new FileInputStream(modelFilename));
-        try {
-            HMMLearner learner = new HMMLearner(3);
-            readModel(input, learner.probabilityModel);
-            readModel(input, learner.probabilityInitial);
-        }
-        finally {
-            input.close();
+        int k = 3;
+        HMMLearner[] learners = new HMMLearner[k];
+        for (int i = 1; i <= k; i++) {
+            learners[i] = new HMMLearner(i);
+            initLearner(learners[i], i);
         }
 
-        Viterbi vit = null;
-        // Viterbi vit = new Viterbi();
+        Viterbi vit = new Viterbi(learners, new double[]{1, 1, 1});
         File directory = new File(path);
         if (directory.isDirectory()) {
             for (File f2 : directory.listFiles()) {
@@ -81,13 +102,14 @@ public class POSTagger
 
     private static void annotateFile(File inFile, Viterbi vit) throws IOException {
 
-        BufferedReader reader = new BufferedReader(new FileReader(inFile));
         File outFile = new File(inFile.getName() + ".pos");
         if (!outFile.exists()) {
             outFile.createNewFile();
         }
-        BufferedWriter writer = new BufferedWriter(
-            new FileWriter(outFile.getAbsoluteFile()));
+
+        BufferedReader reader = new BufferedReader(new FileReader(inFile));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(
+                                    outFile.getAbsoluteFile()));
 
         try {
 
