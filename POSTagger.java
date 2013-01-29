@@ -87,7 +87,7 @@ public class POSTagger
 
     private static void annotate(String path) throws IOException
     {
-        int k = 3;
+        int k = 2;
         HMMLearner[] learners = new HMMLearner[k];
         for (int i = 0; i < k; i++) {
             learners[i] = new HMMLearner(i + 1);
@@ -105,7 +105,7 @@ public class POSTagger
 
     private static void annotateFile(File inFile, Viterbi vit) throws IOException {
 
-        File outFile = new File(inFile.getName() + ".pos");
+        File outFile = new File(inFile.getAbsoluteFile() + ".pos");
         if (!outFile.exists()) {
             outFile.createNewFile();
         }
@@ -118,14 +118,22 @@ public class POSTagger
 
             String sentence;
             ArrayList ttSentence;
+            int i = 0;
             while ((sentence = reader.readLine()) != null) {
+
+                if (sentence.length() == 0 || sentence == "\n") {
+                    writer.newLine();
+                    continue;
+                }
 
                 ttSentence = new ArrayList<TaggedToken>();
 
                 for (String word : sentence.split(" ")) {
                     ttSentence.add(new TaggedToken(word + "/xxx"));
                 }
-                for(TaggedToken tt : vit.tagSentence((TaggedToken[])ttSentence.toArray())) {
+                for(TaggedToken tt : vit.tagSentence(
+                    (TaggedToken [])ttSentence.toArray(new TaggedToken [ttSentence.size()])
+                )) {
                     writer.write(tt.toString() + " ");
                 }
                 writer.newLine();

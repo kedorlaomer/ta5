@@ -240,14 +240,14 @@ public class HMMLearner
             {
                 ArrayList<String> auxList = ((ArrayList<String>)((ArrayList<String>)key).clone());
                 auxList.set(auxList.size()-1,currentTag);
-                System.out.println("auxList: "+auxList.toString());
+                // System.out.println("auxList: "+auxList.toString());
                 sum += this.getFormatedModel(auxList);
-                System.out.println("value for auxlist found: "+new Integer(this.getFormatedInitial(auxList)).toString());
-                System.out.println("sum: "+sum.toString());
+                // System.out.println("value for auxlist found: "+new Integer(this.getFormatedInitial(auxList)).toString());
+                // System.out.println("sum: "+sum.toString());
             }
-            System.out.println("key: "+key.toString());
-            System.out.println("key value: "+new Integer(this.getFormatedModel((ArrayList<String>)key)).toString());
-            System.out.println("sum: "+new Integer(sum).toString());
+            // System.out.println("key: "+key.toString());
+            // System.out.println("key value: "+new Integer(this.getFormatedModel((ArrayList<String>)key)).toString());
+            // System.out.println("sum: "+new Integer(sum).toString());
 
             model.put(key, sum == 0? Double.NaN : new Integer(this.getFormatedModel((ArrayList<String>)key)).doubleValue()/sum.doubleValue());
         }
