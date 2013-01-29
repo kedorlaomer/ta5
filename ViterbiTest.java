@@ -14,7 +14,6 @@ public class ViterbiTest
 
     @Test public void lastElementsNormal() throws IOException
     {
-        Viterbi v = new Viterbi();
         String[] given = new String[] {"A", "B", "C"};
         String[] expected = new String[] {"B", "C"};
         assertEquals(expected, v.lastElements(given, 2));
