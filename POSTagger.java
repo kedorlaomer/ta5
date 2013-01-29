@@ -46,12 +46,7 @@ public class POSTagger
 
     private static void learn(String directory) throws IOException
     {
-        HMMLearner learner = new HMMLearner(new File(directory), 1);
-        // learner.initProbabilityFrom(
-        //     learner.probabilityModel, learner.formatedModel);
-
-        // learner.initProbabilityFrom(
-        //     learner.probabilityInitial, learner.formatedInitial);
+        HMMLearner learner = new HMMLearner(new File(directory), 3);
 
         DataOutputStream output = new DataOutputStream(
                                 new FileOutputStream(modelFilename));
@@ -70,17 +65,17 @@ public class POSTagger
             readModel(input, learner.probabilityModel);
             readModel(input, learner.probabilityInitial);
         }
-        finally
-        {
+        finally {
             input.close();
         }
 
         Viterbi vit = null;
         // Viterbi vit = new Viterbi();
         File directory = new File(path);
-        if (directory.isDirectory())
-            for (File f2 : directory.listFiles())
+        if (directory.isDirectory()) {
+            for (File f2 : directory.listFiles()) {
                 annotateFile(f2, vit);
+        }}
     }
 
 
