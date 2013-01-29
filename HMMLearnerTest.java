@@ -72,7 +72,6 @@ public class HMMLearnerTest
     @Test public void NNtoNN() throws IOException
     {
         HMMLearner learner = new HMMLearner(new File("brown_learn"), 2);
-        System.out.println(learner.transitionProbability(new String[] {"at"}, "nn"));
         double expected = 0.0841;
         assertEquals(expected, learner.transitionProbability(new String[] {"nn"}, "nn"), 0.01);
     }

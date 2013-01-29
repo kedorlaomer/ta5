@@ -19,6 +19,32 @@ public class ViterbiTest
         assertEquals(expected, v.lastElements(given, 2));
     }
 
+    @Test public void tooShort() throws IOException
+    {
+        String[] given = new String[] {"A", "B", "C"};
+        String[] expected = new String[] {"A", "B", "C"};
+        assertEquals(expected, v.lastElements(given, 5));
+    }
+
+    @Test public void simpleSentence() throws IOException
+    {
+        TaggedToken[] sentence = v.tagSentence(tt("this is a simple sentence"));
+        TaggedToken[] expected = null; // TODO: do this by hand
+        System.out.println(sentence);
+        assertEquals(expected, sentence);
+    }
+
+    private TaggedToken[] tt(String s)
+    {
+        String[] tokens = s.split(" ");
+        TaggedToken[] rv = new TaggedToken[tokens.length];
+
+        for (int i = 0; i < tokens.length; i++)
+            rv[i] = new TaggedToken(tokens[i] + "/xxx");
+
+        return rv;
+    }
+
     public ViterbiTest()
     {
     }

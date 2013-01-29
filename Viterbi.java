@@ -51,6 +51,17 @@ public class Viterbi
     }
 
     /*
+     * has already got the learners; like Viterbi(File, int, double[])
+     */
+
+    public Viterbi(HMMLearner[] learners, double[] a) throws IOException
+    {
+        this.learners = learners;
+        this.a = a;
+        this.k = learners.length;
+    }
+
+    /*
      * input: "this/xxx is/xxx an/xxx untagged/xxx sentence/xxx"
      * output: "this/det is/bez an/at untagged/jj sentence/nn"
      */

@@ -326,7 +326,6 @@ LOOP:
             good += model.get(list);
         }
 
-        System.out.println(good + "÷" + all);
         return ((double) good)/all;
     }
 }
