@@ -69,8 +69,12 @@ public class POSTagger
             input.close();
         }
 
-        Viterbi vit = null;
-        // Viterbi vit = new Viterbi();
+        int k = 3;
+        HMMLearner[] learners = new HMMLearner[k];
+        for (int i = 1; i =< k; i++)
+            learners[i] = new HMMLearner(directory, i);
+
+        Viterbi vit = new Viterbi(learners, new double[]{1, 1, 1});
         File directory = new File(path);
         if (directory.isDirectory()) {
             for (File f2 : directory.listFiles()) {
