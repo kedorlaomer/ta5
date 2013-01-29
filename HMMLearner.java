@@ -9,14 +9,12 @@ public class HMMLearner
 {
     /* all k-tuples */
     private HashMap<List<TaggedToken>, Integer> model = new HashMap<List<TaggedToken>, Integer>();
-
-    private HashMap<List<String>, Integer> formatedModel = new HashMap<List<String>, Integer>();
-
     /* k-tuples at sentence openings */
     private HashMap<List<TaggedToken>, Integer> initial = new HashMap<List<TaggedToken>, Integer>();
 
     //not necessary
-    private HashMap<List<String>, Integer> formatedInitial = new HashMap<List<String>, Integer>();
+    public HashMap<List<String>, Integer> formatedModel = new HashMap<List<String>, Integer>();
+    public HashMap<List<String>, Integer> formatedInitial = new HashMap<List<String>, Integer>();
     
     public HashMap<List<String>, Double> probabilityModel = new HashMap<List<String>, Double>();
     public HashMap<List<String>, Double> probabilityInitial = new HashMap<List<String>, Double>();
@@ -28,13 +26,18 @@ public class HMMLearner
      * frequencies of all k-tuples to model and initial
      */
 
+    public HMMLearner(int k)
+    {
+        this.k = k;
+    }
+
     public HMMLearner(File directory, int k) throws IOException
     {
         this.k = k;
         readRecursively(directory);
         formatModel();
-        getProbabilityFrom(probabilityModel, formatedModel);
-        getProbabilityFrom(probabilityInitial, formatedInitial);
+        initProbabilityFrom(probabilityModel, formatedModel);
+        initProbabilityFrom(probabilityInitial, formatedInitial);
     }
 
     /*
@@ -168,7 +171,7 @@ public class HMMLearner
     }
 
 
-    public void getProbabilityFrom(HashMap<List<String>, Double> model,
+    public void initProbabilityFrom(HashMap<List<String>, Double> model,
         HashMap<List<String>, Integer> from)
     {
         String [] prevTags;
