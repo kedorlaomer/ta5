@@ -7,6 +7,7 @@ public class Viterbi
     private HMMLearner[] learners;
     private double[] a; 
     private double[][] probM = new double[150][300]; //150 rows and 300 columns
+    private BackoffModel backoff;
 
     /* all brown tags */
     private String[] allTags = { "'", "''", "(", ")", "*", ",",
@@ -25,7 +26,8 @@ public class Viterbi
     /*
      * reads an up to order k HMM model from directory's corpus
      * files, weighting different models with non-zero
-     * coefficients a
+     * coefficients a; the last of these is used for the
+     * back-off model and thus (a kind of) smoothing
      */
     public Viterbi(File directory, int k, double[] a) throws IOException
     {
@@ -185,6 +187,10 @@ public class Viterbi
                     denom += a[i];
                 }
             }
+
+        rv += backoff.probability(tag);
+        denom += a[k];
+
         return rv/denom;
     }
 

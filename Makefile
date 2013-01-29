@@ -10,7 +10,7 @@ clean :
 	-rm *.class
 
 compile : clean
-	javac $(JOPTS) *.java
+	javac -g $(JOPTS) *.java
 
 compileTests : clean
 	ls *.java | grep Test.java | xargs javac $(JOPTS)

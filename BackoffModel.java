@@ -10,7 +10,7 @@ public class BackoffModel
 {
     private Map<TaggedToken, Integer> everything;
     private Set<String> known;
-    private Map<String, Double> distribution;
+    public Map<String, Double> distribution;
     private double fraction;
 
     /*
@@ -29,6 +29,11 @@ public class BackoffModel
         known = new HashSet<String>();
         readRecursively(directory);
         estimateUnknownProbabilities();
+    }
+
+    public BackoffModel()
+    {
+        this.distribution = new HashMap<String, Double>();
     }
 
     private void readRecursively(File f) throws IOException
