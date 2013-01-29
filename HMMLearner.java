@@ -209,6 +209,10 @@ public class HMMLearner
     public void getProbabilityFrom(HashMap<List<String>, Double> model,
         HashMap<List<String>, Integer> from)
     {
+        System.out.println("============================");
+        System.out.println("in getProbabilityFrom");
+        System.out.println("============================");
+        
         String [] prevTags = new String[k-1];
         String token, tag;
         for (List<String> key : from.keySet())
@@ -232,12 +236,20 @@ public class HMMLearner
                 // System.out.println(prevTags.toString());
             }
             Integer sum = new Integer(0);
-            for(String currentTag : allTags){
+            for(String currentTag : allTags)
+            {
                 ArrayList<String> auxList = ((ArrayList<String>)((ArrayList<String>)key).clone());
                 auxList.set(auxList.size()-1,currentTag);
+                System.out.println("auxList: "+auxList.toString());
                 sum += this.getFormatedModel(auxList);
+                System.out.println("value for auxlist found: "+new Integer(this.getFormatedInitial(auxList)).toString());
+                System.out.println("sum: "+sum.toString());
             }
+            System.out.println("key: "+key.toString());
+            System.out.println("key value: "+new Integer(this.getFormatedModel((ArrayList<String>)key)).toString());
+            System.out.println("sum: "+new Integer(sum).toString());
 
+            model.put(key, sum == 0? Double.NaN : new Integer(this.getFormatedModel((ArrayList<String>)key)).doubleValue()/sum.doubleValue());
         }
     }
 
@@ -246,6 +258,9 @@ public class HMMLearner
     {
         if(k < 2)
         {
+            System.out.println("============================");
+            System.out.println("in getInitialProbabilityFrom");
+            System.out.println("============================");
             String tag;
             for (List<String> key : from.keySet())
             {
@@ -255,10 +270,17 @@ public class HMMLearner
                 for(String currentTag : allTags){
                     ArrayList<String> auxList = ((ArrayList<String>)((ArrayList<String>)key).clone());
                     auxList.set(auxList.size()-1,currentTag);
-                    sum += this.getFormatedModel(auxList);
-                }
 
-                model.put(key, sum == 0? Double.NaN : new Integer(this.getFormatedModel((ArrayList<String>)key)).doubleValue()/sum.doubleValue());
+                    // System.out.println("auxList: "+auxList.toString());
+                    sum += new Integer(this.getFormatedInitial(auxList));
+                    // System.out.println("value for auxlist found: "+new Integer(this.getFormatedInitial(auxList)).toString());
+                    // System.out.println("sum: "+sum.toString());
+                }
+                // System.out.println("key: "+key.toString());
+                // System.out.println("key value: "+new Integer(this.getFormatedInitial((ArrayList<String>)key)).toString());
+                // System.out.println("sum: "+new Integer(sum).toString());
+
+                model.put(key, sum == 0? Double.NaN : new Integer(this.getFormatedInitial((ArrayList<String>)key)).doubleValue()/sum.doubleValue());
             }
         }
     }
@@ -286,7 +308,6 @@ public class HMMLearner
             return probabilityInitial.get(Arrays.asList(tag));
         else
             return Double.NaN;
-
     }
 
     /*

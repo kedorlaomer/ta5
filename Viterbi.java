@@ -69,22 +69,40 @@ public class Viterbi
     {
         clearMatrix();
         String[] history = new  String[sentence.length+1];
+        
+        System.out.println("incoming sentence:");
+        for(int i = 0; i < sentence.length; i++)
+            System.out.println(sentence[i].toString());
+        
         for(int i = 0; i < sentence.length; i++)
         {
             int index = 0;
             TaggedToken tt = sentence[i];
             
+            System.out.println("===================== column "+new Integer(i+1).toString()+" =====================");
+            System.out.println("===================== token "+tt.token()+" =====================");
+
+
             if(i == 0)
                 for(int row = 0; row < allTags.length; row++){
                     probM[row + 1][i+1] = Math.log(initialProbability(tt.token(),allTags[row]));
-                    index = probM[row + 1][i+1] > probM[index+1][i+1] ? row : index;
+                    if(probM[row + 1][i+1] > probM[index+1][i+1])
+                    {
+                        System.out.println("index changed at column: "+new Integer(i).toString());
+                        index = row;
+                    }
+                    else
+                    {
+                        System.out.println("value for index "+new Integer(index).toString()+" : "+new Double(probM[index+1][i+1]).toString());
+                        System.out.println("new value "+new Integer(row).toString()+" : "+new Double(probM[index+1][i+1]).toString());
+                    }
                 }
             else
             {
                 //compute and store log(e_t(S[i+1])) + prevColMax 
                 String[] kHist = lastElements(history, k-1);
-                for(int row = 0; row < allTags.length; row++){
-
+                for(int row = 0; row < allTags.length; row++)
+                {
                     //compute max(v_s(i)+log(a_s(t)))
                     double prevColMax = 0.0;
                     String [] prevHist = kHist.clone();
@@ -95,9 +113,21 @@ public class Viterbi
 
                     // store the probability in the matrix
                     probM[row + 1][i+1] = Math.log(probability(kHist,tt.token(),allTags[row])) + prevColMax;
-                    index = probM[row + 1][i+1] > probM[index+1][i+1] ? row : index;
+                    // index = probM[row + 1][i+1] >= probM[index+1][i+1] ? row : index;
+                
+                    if(probM[row + 1][i+1] > probM[index+1][i+1])
+                    {
+                        System.out.println("index changed at column: "+new Integer(i).toString());
+                        index = row;
+                    }
+                    else
+                    {
+                        System.out.println("value for index "+new Integer(index).toString()+" : "+new Double(probM[index+1][i+1]).toString());
+                        System.out.println("new value "+new Integer(row).toString()+" : "+new Double(probM[index+1][i+1]).toString());
+                    }
                 }
             }
+            System.out.println("Index for column "+new Integer(i).toString()+" is: "+new Integer(index).toString());
             //update history
             history[i] = allTags[index];
         }
@@ -107,6 +137,11 @@ public class Viterbi
         for(int i = 0; i < sentence.length; i++)
             r[i] = new TaggedToken(sentence[i].token()+"/"+history[i]);
 
+        System.out.println("outcoming sentence:");
+        for(int i = 0; i < sentence.length; i++)
+            System.out.println(r[i].toString());
+        
+        
         return r;
     }
 
