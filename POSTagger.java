@@ -47,11 +47,11 @@ public class POSTagger
     private static void learn(String directory) throws IOException
     {
         HMMLearner learner = new HMMLearner(new File(directory), 1);
-        learner.initProbabilityFrom(
-            learner.probabilityModel, learner.formatedModel);
+        // learner.initProbabilityFrom(
+        //     learner.probabilityModel, learner.formatedModel);
 
-        learner.initProbabilityFrom(
-            learner.probabilityInitial, learner.formatedInitial);
+        // learner.initProbabilityFrom(
+        //     learner.probabilityInitial, learner.formatedInitial);
 
         DataOutputStream output = new DataOutputStream(
                                 new FileOutputStream(modelFilename));

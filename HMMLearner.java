@@ -206,7 +206,7 @@ public class HMMLearner
     //     }
     // }
 
-    public void initProbabilityFrom(HashMap<List<String>, Double> model,
+    public void getProbabilityFrom(HashMap<List<String>, Double> model,
         HashMap<List<String>, Integer> from)
     {
         String [] prevTags = new String[k-1];
