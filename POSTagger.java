@@ -29,6 +29,7 @@ public class POSTagger
         try {
             writeModel(output, learner.probabilityModel);
             writeModel(output, learner.probabilityInitial);
+            writeModel(output, learner.transitionalProb);
         }
         finally {
             output.close();
@@ -42,6 +43,7 @@ public class POSTagger
         try {
             readModel(input, learner.probabilityModel);
             readModel(input, learner.probabilityInitial);
+            readModel(input, learner.transitionalProb);
         }
         finally {
             input.close();
