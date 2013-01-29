@@ -8,12 +8,19 @@ public class Viterbi
     private double[] a; 
     private double[][] probM = new double[150][300]; //150 rows and 300 columns
 
-    private String[] allTags = {".","(",")","*","--",",",":","ABL","ABN","ABX","AP","AT","BE","BED","BEDZ",
-        "BEG","BEM","BEN","BER","BEZ","CC","CD","CS","DO","DOD","DOZ","DT","DTI","DTS","DTX",
-        "EX","FW","HV","HVD","HVG","HVN","IN","JJ","JJR","JJS","JJT","MD","NC","NN","NN$","NNS","NNS$","NP",
-        "NP$","NPS","NPS$","NR","OD","PN","PN$","PP$","PP$$","PPL","PPLS","PPO","PPS","PPSS","PRP",
-        "PRP$","QL","QLP","RB","RBR","RBT","RN","RP","TO","UH","VB","VBD","VBG","VBN","VBP","VBZ","WDT","WP$","WPO","WPS","WQL","WRB"};
-    
+    /* all brown tags */
+    private String[] allTags = { "'", "''", "(", ")", "*", ",",
+        "--", ".", ":", "``", "abl", "abn", "abx", "ap", "ap$",
+        "at", "be", "bed", "bedz", "beg", "bem", "ben", "ber",
+        "bez", "cc", "cd", "cd$", "cs", "do", "dod", "doz", "dt",
+        "dt$", "dti", "dts", "dtx", "ex", "fw", "hv", "hvd", "hvg",
+        "hvn", "hvz", "in", "jj", "jj$", "jjr", "jjs", "jjt", "md",
+        "nil", "nn", "nn$", "nns", "nns$", "np", "np$", "nps",
+        "nps$", "nr", "nr$", "nrs", "od", "pn", "pn$", "pp$",
+        "pp$$", "ppl", "ppls", "ppo", "pps", "ppss", "ql", "qlp",
+        "rb", "rb$", "rbr", "rbt", "rn", "rp", "to", "uh", "vb",
+        "vbd", "vbg", "vbn", "vbz", "wdt", "wp$", "wpo", "wps",
+        "wql", "wrb" };
 
     /*
      * reads an up to order k HMM model from directory's corpus
@@ -139,7 +146,7 @@ public class Viterbi
      * returns the n last elements of arr
      */
 
-    private String[] lastElements(String[] arr, int n)
+    protected String[] lastElements(String[] arr, int n)
     {
         n = Math.min(n, arr.length);
         String[] rv = new String[n];
