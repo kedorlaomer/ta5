@@ -268,15 +268,25 @@ public class HMMLearner
      */
     public double probability(String[] history, String token, String tag)
     {
-        List<String> ar = Arrays.asList(history);
+        // ArrayList<String> ar = (ArrayList<String>)Arrays.asList(history);
+        ArrayList<String> ar = new ArrayList<String>();
+        for(int i = 0; i < history.length; i++)
+            ar.add(history[i]);
         ar.add(token);
         ar.add(tag);
-        return probabilityModel.get(ar);
+        if (probabilityModel.containsKey(ar))
+            return probabilityModel.get(ar);
+        else 
+            return Double.NaN;
     }
 
     public double initialProbability(String token, String tag)
     {
-        return probabilityInitial.get(Arrays.asList(tag));
+        if(probabilityInitial.containsKey(Arrays.asList(tag)))
+            return probabilityInitial.get(Arrays.asList(tag));
+        else
+            return Double.NaN;
+
     }
 
     /*
